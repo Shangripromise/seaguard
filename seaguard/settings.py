@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'vessels',  
+    'emergencies',
 ]
 
 LOGIN_REDIRECT_URL = '/dashboard/'
