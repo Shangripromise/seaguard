@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>SeaGuard - Dashboard</title></head>
+<body>
+    <h1>Welcome to SeaGuard</h1>
+    <p>You are logged in as {{ request.user.username }}</p>
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <a href="{% url 'logout' %}">Logout</a>
+</body>
+</html>
