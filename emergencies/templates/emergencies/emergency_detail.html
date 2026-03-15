@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><title>SeaGuard - Emergency Detail</title></head>
+<body>
+    <h1>Emergency Request Detail</h1>
+    <p>Vessel: {{ emergency.vessel.name }}</p>
+    <p>Type: {{ emergency.get_emergency_type_display }}</p>
+    <p>Status: {{ emergency.status }}</p>
+    <p>Description: {{ emergency.description }}</p>
+    <p>Latitude: {{ emergency.latitude }}</p>
+    <p>Longitude: {{ emergency.longitude }}</p>
+    <p>Submitted: {{ emergency.created_at|date:"d M Y H:i" }}</p>
+    <a href="{% url 'emergency_list' %}">Back to Emergency List</a>
+</body>
+</html>
+

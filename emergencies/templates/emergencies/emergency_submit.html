@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>SeaGuard - Submit Emergency</title></head>
+<body>
+    <h1>Submit Emergency Request</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit Emergency</button>
+    </form>
+    <a href="{% url 'emergency_list' %}">Cancel</a>
+</body>
+</html>
