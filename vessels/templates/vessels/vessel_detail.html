@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>SeaGuard - Vessel Detail</title></head>
+<body>
+    <h1>{{ vessel.name }}</h1>
+    <p>IMO Number: {{ vessel.imo_number }}</p>
+    <p>Type: {{ vessel.get_vessel_type_display }}</p>
+    <p>Flag: {{ vessel.flag }}</p>
+    <p>Added: {{ vessel.created_at }}</p>
+    <a href="{% url 'vessel_delete' vessel.pk %}">Delete Vessel</a>
+    <a href="{% url 'vessel_list' %}">Back to My Vessels</a>
+</body>
+</html>

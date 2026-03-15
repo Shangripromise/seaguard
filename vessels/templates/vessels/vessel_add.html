@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>SeaGuard - Add Vessel</title></head>
+<body>
+    <h1>Add New Vessel</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add Vessel</button>
+    </form>
+    <a href="{% url 'vessel_list' %}">Cancel</a>
+</body>
+</html>
