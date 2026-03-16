@@ -1,13 +1,30 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head><title>SeaGuard - Submit Emergency</title></head>
+<head>
+    <title>SeaGuard - Submit Emergency</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
 <body>
-    <h1>Submit Emergency Request</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit Emergency</button>
-    </form>
-    <a href="{% url 'emergency_list' %}">Cancel</a>
+    <nav>
+        <h1>SeaGuard</h1>
+        <div>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>Submit Emergency Request</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-danger">Submit Emergency</button>
+                <a href="{% url 'emergency_list' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
+

@@ -1,13 +1,29 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head><title>SeaGuard - Vessel Detail</title></head>
+<head>
+    <title>SeaGuard - Vessel Detail</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
 <body>
-    <h1>{{ vessel.name }}</h1>
-    <p>IMO Number: {{ vessel.imo_number }}</p>
-    <p>Type: {{ vessel.get_vessel_type_display }}</p>
-    <p>Flag: {{ vessel.flag }}</p>
-    <p>Added: {{ vessel.created_at }}</p>
-    <a href="{% url 'vessel_delete' vessel.pk %}">Delete Vessel</a>
-    <a href="{% url 'vessel_list' %}">Back to My Vessels</a>
+    <nav>
+        <h1>SeaGuard</h1>
+        <div>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>{{ vessel.name }}</h2>
+            <p>IMO Number: {{ vessel.imo_number }}</p>
+            <p>Type: {{ vessel.get_vessel_type_display }}</p>
+            <p>Flag: {{ vessel.flag }}</p>
+            <p>Added: {{ vessel.created_at|date:"d M Y H:i" }}</p>
+            <a href="{% url 'vessel_delete' vessel.pk %}" class="btn btn-danger">Delete Vessel</a>
+            <a href="{% url 'vessel_list' %}" class="btn btn-secondary">Back to My Vessels</a>
+        </div>
+    </div>
 </body>
 </html>

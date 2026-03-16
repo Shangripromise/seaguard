@@ -1,44 +1,59 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head><title>SeaGuard - Admin Dashboard</title></head>
+<head>
+    <title>SeaGuard - Admin Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
 <body>
-    <h1>SeaGuard Admin Dashboard</h1>
-    <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+    <nav>
+        <h1>SeaGuard</h1>
+        <div>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </nav>
 
-    <h2>System Overview</h2>
-    <table border="1">
-        <tr>
-            <th>Total Users</th>
-            <th>Total Vessels</th>
-            <th>Total Emergencies</th>
-        </tr>
-        <tr>
-            <td>{{ total_users }}</td>
-            <td>{{ total_vessels }}</td>
-            <td>{{ total_emergencies }}</td>
-        </tr>
-    </table>
+    <div class="container">
+        <div class="card">
+            <h2>System Overview</h2>
+            <table>
+                <tr>
+                    <th>Total Users</th>
+                    <th>Total Vessels</th>
+                    <th>Total Emergencies</th>
+                </tr>
+                <tr>
+                    <td>{{ total_users }}</td>
+                    <td>{{ total_vessels }}</td>
+                    <td>{{ total_emergencies }}</td>
+                </tr>
+            </table>
+        </div>
 
-    <h2>Active Emergencies</h2>
-    {% if active_emergencies %}
-        <table border="1">
-            <tr>
-                <th>Vessel</th>
-                <th>Type</th>
-                <th>Submitted By</th>
-                <th>Date</th>
-            </tr>
-            {% for emergency in active_emergencies %}
-            <tr>
-                <td>{{ emergency.vessel.name }}</td>
-                <td>{{ emergency.get_emergency_type_display }}</td>
-                <td>{{ emergency.submitted_by.username }}</td>
-                <td>{{ emergency.created_at|date:"d M Y H:i" }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    {% else %}
-        <p>No active emergencies.</p>
-    {% endif %}
+        <div class="card">
+            <h2>Active Emergencies</h2>
+            {% if active_emergencies %}
+            <table>
+                <tr>
+                    <th>Vessel</th>
+                    <th>Type</th>
+                    <th>Submitted By</th>
+                    <th>Date</th>
+                </tr>
+                {% for emergency in active_emergencies %}
+                <tr>
+                    <td>{{ emergency.vessel.name }}</td>
+                    <td>{{ emergency.get_emergency_type_display }}</td>
+                    <td>{{ emergency.submitted_by.username }}</td>
+                    <td>{{ emergency.created_at|date:"d M Y H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+                <p>No active emergencies.</p>
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>

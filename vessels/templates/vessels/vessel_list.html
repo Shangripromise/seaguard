@@ -1,39 +1,57 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head><title>SeaGuard - My Vessels</title></head>
+<head>
+    <title>SeaGuard - My Vessels</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
 <body>
-    <h1>My Vessels</h1>
-    <a href="{% url 'vessel_add' %}">Add New Vessel</a>
-    <a href="{% url 'dashboard' %}">Back to Dashboard</a>
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    {% endif %}
-    {% if vessels %}
-        <table border="1">
-            <tr>
-                <th>Name</th>
-                <th>IMO Number</th>
-                <th>Type</th>
-                <th>Flag</th>
-                <th>Actions</th>
-            </tr>
-            {% for vessel in vessels %}
-            <tr>
-                <td>{{ vessel.name }}</td>
-                <td>{{ vessel.imo_number }}</td>
-                <td>{{ vessel.get_vessel_type_display }}</td>
-                <td>{{ vessel.flag }}</td>
-                <td>
-                    <a href="{% url 'vessel_detail' vessel.pk %}">View</a>
-                    <a href="{% url 'vessel_delete' vessel.pk %}">Delete</a>
-                </td>
-            </tr>
+    <nav>
+        <h1>SeaGuard</h1>
+        <div>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message">{{ message }}</div>
             {% endfor %}
-        </table>
-    {% else %}
-        <p>No vessels added yet.</p>
-    {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <h2>My Vessels</h2>
+            <a href="{% url 'vessel_add' %}" class="btn btn-primary">Add New Vessel</a>
+            {% if vessels %}
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>IMO Number</th>
+                    <th>Type</th>
+                    <th>Flag</th>
+                    <th>Actions</th>
+                </tr>
+                {% for vessel in vessels %}
+                <tr>
+                    <td>{{ vessel.name }}</td>
+                    <td>{{ vessel.imo_number }}</td>
+                    <td>{{ vessel.get_vessel_type_display }}</td>
+                    <td>{{ vessel.flag }}</td>
+                    <td>
+                        <a href="{% url 'vessel_detail' vessel.pk %}" class="btn btn-secondary">View</a>
+                        <a href="{% url 'vessel_delete' vessel.pk %}" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+                <p>No vessels added yet.</p>
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>

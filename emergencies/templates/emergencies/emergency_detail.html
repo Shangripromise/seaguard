@@ -1,16 +1,31 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head><title>SeaGuard - Emergency Detail</title></head>
+<head>
+    <title>SeaGuard - Emergency Detail</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
 <body>
-    <h1>Emergency Request Detail</h1>
-    <p>Vessel: {{ emergency.vessel.name }}</p>
-    <p>Type: {{ emergency.get_emergency_type_display }}</p>
-    <p>Status: {{ emergency.status }}</p>
-    <p>Description: {{ emergency.description }}</p>
-    <p>Latitude: {{ emergency.latitude }}</p>
-    <p>Longitude: {{ emergency.longitude }}</p>
-    <p>Submitted: {{ emergency.created_at|date:"d M Y H:i" }}</p>
-    <a href="{% url 'emergency_list' %}">Back to Emergency List</a>
+    <nav>
+        <h1>SeaGuard</h1>
+        <div>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>Emergency Request Detail</h2>
+            <p><strong>Vessel:</strong> {{ emergency.vessel.name }}</p>
+            <p><strong>Type:</strong> {{ emergency.get_emergency_type_display }}</p>
+            <p><strong>Status:</strong> {{ emergency.status }}</p>
+            <p><strong>Description:</strong> {{ emergency.description }}</p>
+            <p><strong>Latitude:</strong> {{ emergency.latitude }}</p>
+            <p><strong>Longitude:</strong> {{ emergency.longitude }}</p>
+            <p><strong>Submitted:</strong> {{ emergency.created_at|date:"d M Y H:i" }}</p>
+            <a href="{% url 'emergency_list' %}" class="btn btn-secondary">Back to Emergency List</a>
+        </div>
+    </div>
 </body>
 </html>
-

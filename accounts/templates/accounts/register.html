@@ -1,18 +1,32 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head><title>SeaGuard - Register</title></head>
+<head>
+    <title>SeaGuard - Register</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
 <body>
-    <h1>Create Account</h1>
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    {% endif %}
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Register</button>
-    </form>
-    <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+    <nav>
+        <h1>SeaGuard</h1>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>Create Account</h2>
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+            <p style="margin-top:15px;">Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+        </div>
+    </div>
 </body>
 </html>

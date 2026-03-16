@@ -1,14 +1,49 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head><title>SeaGuard - Dashboard</title></head>
+<head>
+    <title>SeaGuard - Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
 <body>
-    <h1>Welcome to SeaGuard</h1>
-    <p>You are logged in as {{ request.user.username }}</p>
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    {% endif %}
-    <a href="{% url 'logout' %}">Logout</a>
+    <nav>
+        <h1>SeaGuard</h1>
+        <div>
+            <span class="welcome">Welcome, {{ request.user.first_name }} {{ request.user.last_name }}</span>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <h2>My Vessels</h2>
+            <p>Manage your registered vessels.</p>
+            <a href="{% url 'vessel_list' %}" class="btn btn-primary">View My Vessels</a>
+            <a href="{% url 'vessel_add' %}" class="btn btn-secondary">Add New Vessel</a>
+        </div>
+
+        <div class="card">
+            <h2>Emergency Requests</h2>
+            <p>Submit or view your emergency requests.</p>
+            <a href="{% url 'emergency_list' %}" class="btn btn-primary">View My Emergencies</a>
+            <a href="{% url 'emergency_submit' %}" class="btn btn-danger">Submit Emergency</a>
+        </div>
+
+        {% if request.user.is_staff %}
+        <div class="card">
+            <h2>Admin</h2>
+            <p>System administration and oversight.</p>
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-primary">Admin Dashboard</a>
+        </div>
+        {% endif %}
+    </div>
 </body>
 </html>

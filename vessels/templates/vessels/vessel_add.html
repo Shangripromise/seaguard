@@ -1,13 +1,29 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head><title>SeaGuard - Add Vessel</title></head>
+<head>
+    <title>SeaGuard - Add Vessel</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
 <body>
-    <h1>Add New Vessel</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Add Vessel</button>
-    </form>
-    <a href="{% url 'vessel_list' %}">Cancel</a>
+    <nav>
+        <h1>SeaGuard</h1>
+        <div>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>Add New Vessel</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Add Vessel</button>
+                <a href="{% url 'vessel_list' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
