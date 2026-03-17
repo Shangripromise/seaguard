@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head><title>SeaGuard - Register as Provider</title></head>
+<body>
+    <h1>Register as a Recovery Provider</h1>
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit Registration</button>
+    </form>
+    <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+</body>
+</html>

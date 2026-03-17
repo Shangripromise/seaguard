@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head><title>SeaGuard - Provider Dashboard</title></head>
+<body>
+    <h1>{{ provider.company_name }}</h1>
+    <p><strong>Status:</strong> Verified Provider</p>
+    <h3>Business Details</h3>
+    <p><strong>Contact:</strong> {{ provider.contact_person }}</p>
+    <p><strong>Phone:</strong> {{ provider.phone_number }}</p>
+    <p><strong>Registration No:</strong> {{ provider.business_registration }}</p>
+    <p><strong>Service Area:</strong> {{ provider.service_area }}</p>
+    <p><strong>Email:</strong> {{ provider.user.email }}</p>
+    <h3>Quick Links</h3>
+    <p><a href="{% url 'emergencies:list' %}">View Active Emergencies</a></p>
+    <p><a href="{% url 'providers:list' %}">Provider Directory</a></p>
+    <a href="{% url 'logout' %}">Sign Out</a>
+</body>
+</html>

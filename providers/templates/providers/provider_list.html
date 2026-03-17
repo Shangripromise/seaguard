@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head><title>SeaGuard - Recovery Provider Directory</title></head>
+<body>
+    <h1>Recovery Provider Directory</h1>
+    <p>Verified marine recovery specialists in the SeaGuard network</p>
+    <a href="{% url 'providers:register' %}">Join as Provider</a>
+    {% if providers %}
+        {% for provider in providers %}
+            <hr>
+            <h3>{{ provider.company_name }}</h3>
+            <p><strong>Contact:</strong> {{ provider.contact_person }}</p>
+            <p><strong>Phone:</strong> {{ provider.phone_number }}</p>
+            <p><strong>Service Area:</strong> {{ provider.service_area }}</p>
+        {% endfor %}
+    {% else %}
+        <p>No verified providers listed yet.</p>
+    {% endif %}
+</body>
+</html>

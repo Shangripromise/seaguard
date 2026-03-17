@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head><title>SeaGuard - Provider Review</title></head>
+<body>
+    <h1>Provider Verification Queue</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <h2>Pending Review ({{ pending|length }})</h2>
+    {% if pending %}
+        {% for provider in pending %}
+            <hr>
+            <p><strong>Company:</strong> {{ provider.company_name }}</p>
+            <p><strong>Contact:</strong> {{ provider.contact_person }}</p>
+            <p><strong>Phone:</strong> {{ provider.phone_number }}</p>
+            <p><strong>Registration No:</strong> {{ provider.business_registration }}</p>
+            <p><strong>Service Area:</strong> {{ provider.service_area }}</p>
+            <p><strong>Applied:</strong> {{ provider.user.date_joined|date:"d M Y" }}</p>
+            <form method="post" action="{% url 'providers:approve' provider.pk %}" style="display:inline">
+                {% csrf_token %}
+                <button type="submit">Approve</button>
+            </form>
+            <form method="post" action="{% url 'providers:reject' provider.pk %}" style="display:inline">
+                {% csrf_token %}
+                <button type="submit">Reject</button>
+            </form>
+        {% endfor %}
+    {% else %}
+        <p>No applications pending review.</p>
+    {% endif %}
+
+    <h2>Approved Providers ({{ approved|length }})</h2>
+    {% if approved %}
+        {% for provider in approved %}
+            <p>{{ provider.company_name }} — {{ provider.contact_person }} — {{ provider.service_area }}</p>
+        {% endfor %}
+    {% else %}
+        <p>No approved providers yet.</p>
+    {% endif %}
+
+    <h2>Rejected ({{ rejected|length }})</h2>
+    {% if rejected %}
+        {% for provider in rejected %}
+            <p>{{ provider.company_name }} — {{ provider.contact_person }}</p>
+        {% endfor %}
+    {% else %}
+        <p>No rejected applications.</p>
+    {% endif %}
+
+</body>
+</html>
