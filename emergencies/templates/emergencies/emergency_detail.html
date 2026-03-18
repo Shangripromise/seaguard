@@ -14,16 +14,50 @@
         </div>
     </nav>
     <div class="container">
+
+        <!-- Emergency info card -->
         <div class="card">
             <h2>Emergency Request</h2>
             <p><strong>Type:</strong> {{ emergency.get_emergency_type_display }}</p>
             <p><strong>Vessel:</strong> {{ emergency.vessel.name }}</p>
             <p><strong>Date:</strong> {{ emergency.created_at|date:"d M Y H:i" }}</p>
             <p><strong>Submitted by:</strong> {{ emergency.submitted_by.username }}</p>
-            <p><strong>Status:</strong> <span class="badge badge-pending">Active</span></p>
+            <p><strong>Description:</strong> {{ emergency.description }}</p>
+            <p>
+                <strong>Status:</strong>
+                <span class="badge
+                    {% if emergency.status == 'active' %}badge-danger
+                    {% elif emergency.status == 'resolved' %}badge-success
+                    {% else %}badge-secondary{% endif %}">
+                    {{ emergency.get_status_display }}
+                </span>
+            </p>
+            {% if allowed %}
+            <a href="{% url 'emergencies:update_status' emergency.pk %}" class="btn btn-primary">Update status</a>
+            {% endif %}
             <a href="{% url 'emergencies:emergency_list' %}" class="btn btn-secondary">Back to Emergencies</a>
             <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
         </div>
+
+        <!-- Status history -->
+        {% if status_updates %}
+        <div class="card" style="margin-top:1rem;">
+            <h3>Status history</h3>
+            <ul style="list-style:none; padding:0; margin:0;">
+                {% for update in status_updates %}
+                <li style="margin-bottom:0.75rem; font-size:14px; color:#555;">
+                    <strong>{{ update.created_at|date:"d M Y H:i" }}</strong>
+                    — {{ update.changed_by.username }}
+                    changed from <em>{{ update.from_status }}</em> to <em>{{ update.to_status }}</em>
+                    {% if update.notes %}
+                    <br><span style="margin-left:1rem;">{{ update.notes }}</span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
     </div>
 </body>
 </html>

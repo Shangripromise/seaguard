@@ -43,7 +43,15 @@ def logout_view(request):
 
 @login_required
 def dashboard_view(request):
-    return render(request, 'accounts/dashboard.html')
+    vessels = Vessel.objects.filter(owner=request.user)
+    emergencies = EmergencyRequest.objects.filter(submitted_by=request.user)
+    active_emergencies = emergencies.filter(status='active')
+    context = {
+        'vessels': vessels,
+        'emergencies': emergencies,
+        'active_emergencies': active_emergencies,
+    }
+    return render(request, 'accounts/dashboard.html', context)
 
 
 @staff_member_required

@@ -28,19 +28,19 @@
         <div class="card">
             <h2>My Vessels</h2>
             <a href="{% url 'vessels:vessel_add' %}" class="btn btn-primary" style="margin-bottom:15px;">+ Add Vessel</a>
-            {% if request.user.vessel_set.all %}
+            {% if vessels %}
                 <table>
                     <tr>
                         <th>Vessel Name</th>
                         <th>Type</th>
-                        <th>Registration</th>
+                        <th>IMO Number</th>
                         <th>Actions</th>
                     </tr>
-                    {% for vessel in request.user.vessel_set.all %}
+                    {% for vessel in vessels %}
                     <tr>
                         <td>{{ vessel.name }}</td>
                         <td>{{ vessel.vessel_type }}</td>
-                        <td>{{ vessel.registration_number }}</td>
+                        <td>{{ vessel.imo_number }}</td>
                         <td><a href="{% url 'vessels:vessel_delete' vessel.pk %}" class="btn btn-danger">Delete</a></td>
                     </tr>
                     {% endfor %}
@@ -52,20 +52,29 @@
 
         <div class="card">
             <h2>My Emergencies</h2>
-            {% if request.user.emergency_set.all %}
+            {% if emergencies %}
                 <table>
                     <tr>
                         <th>Type</th>
                         <th>Vessel</th>
                         <th>Date</th>
                         <th>Status</th>
+                        <th>Actions</th>
                     </tr>
-                    {% for emergency in request.user.emergency_set.all %}
+                    {% for emergency in emergencies %}
                     <tr>
                         <td>{{ emergency.get_emergency_type_display }}</td>
                         <td>{{ emergency.vessel.name }}</td>
                         <td>{{ emergency.created_at|date:"d M Y H:i" }}</td>
-                        <td><span class="badge badge-pending">Active</span></td>
+                        <td>
+                            <span class="badge
+                                {% if emergency.status == 'active' %}badge-danger
+                                {% elif emergency.status == 'resolved' %}badge-success
+                                {% else %}badge-secondary{% endif %}">
+                                {{ emergency.get_status_display }}
+                            </span>
+                        </td>
+                        <td><a href="{% url 'emergencies:emergency_detail' emergency.pk %}" class="btn btn-secondary">View</a></td>
                     </tr>
                     {% endfor %}
                 </table>
