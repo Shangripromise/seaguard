@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+app_name = 'vessels'
 
 urlpatterns = [
     path('', views.vessel_list, name='vessel_list'),

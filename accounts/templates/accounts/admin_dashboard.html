@@ -1,44 +1,75 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head><title>SeaGuard - Admin Dashboard</title></head>
+<head>
+    <title>SeaGuard - Admin Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
 <body>
-    <h1>SeaGuard Admin Dashboard</h1>
-    <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+    <nav>
+        <h1>SEAGUARD</h1>
+        <div>
+            <span style="color:#ccc; font-size:14px;">ADMIN</span>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </nav>
+    <div class="container">
 
-    <h2>System Overview</h2>
-    <table border="1">
-        <tr>
-            <th>Total Users</th>
-            <th>Total Vessels</th>
-            <th>Total Emergencies</th>
-        </tr>
-        <tr>
-            <td>{{ total_users }}</td>
-            <td>{{ total_vessels }}</td>
-            <td>{{ total_emergencies }}</td>
-        </tr>
-    </table>
-
-    <h2>Active Emergencies</h2>
-    {% if active_emergencies %}
-        <table border="1">
-            <tr>
-                <th>Vessel</th>
-                <th>Type</th>
-                <th>Submitted By</th>
-                <th>Date</th>
-            </tr>
-            {% for emergency in active_emergencies %}
-            <tr>
-                <td>{{ emergency.vessel.name }}</td>
-                <td>{{ emergency.get_emergency_type_display }}</td>
-                <td>{{ emergency.submitted_by.username }}</td>
-                <td>{{ emergency.created_at|date:"d M Y H:i" }}</td>
-            </tr>
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message">{{ message }}</div>
             {% endfor %}
-        </table>
-    {% else %}
-        <p>No active emergencies.</p>
-    {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="stats-row">
+            <div class="stat-tile">
+                <h2>{{ total_users }}</h2>
+                <p>Members</p>
+            </div>
+            <div class="stat-tile">
+                <h2>{{ total_vessels }}</h2>
+                <p>Vessels</p>
+            </div>
+            <div class="stat-tile">
+                <h2>{{ total_emergencies }}</h2>
+                <p>Emergencies</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Active Emergencies</h2>
+            {% if active_emergencies %}
+                <table>
+                    <tr>
+                        <th>Vessel</th>
+                        <th>Type</th>
+                        <th>Submitted By</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                    {% for emergency in active_emergencies %}
+                    <tr>
+                        <td>{{ emergency.vessel.name }}</td>
+                        <td>{{ emergency.get_emergency_type_display }}</td>
+                        <td>{{ emergency.submitted_by.username }}</td>
+                        <td>{{ emergency.created_at|date:"d M Y H:i" }}</td>
+                        <td><span class="badge badge-pending">Active</span></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>No active emergencies.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2>Quick Links</h2>
+            <a href="{% url 'providers:admin_review' %}" class="btn btn-primary">Provider Review Queue</a>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+
+    </div>
 </body>
 </html>
