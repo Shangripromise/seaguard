@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.http import Http404
 
-from .forms import RecoveryProviderRegistrationForm
-from .models import RecoveryProvider
+from .forms import RecoveryProviderRegistrationForm, ProviderRatingForm
+from .models import RecoveryProvider, ProviderRating
 
 
 def is_staff(user):
@@ -36,6 +36,44 @@ def provider_list(request):
     return render(request, 'providers/provider_list.html', {'providers': providers})
 
 
+def provider_detail(request, provider_id):
+    provider = get_object_or_404(RecoveryProvider, pk=provider_id, verification_status='approved')
+    ratings = provider.ratings.select_related('rated_by').all()
+
+    user_rating = None
+    if request.user.is_authenticated:
+        user_rating = ProviderRating.objects.filter(
+            provider=provider, rated_by=request.user
+        ).first()
+
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            messages.error(request, 'You must be logged in to leave a rating.')
+            return redirect('login')
+
+        if user_rating:
+            form = ProviderRatingForm(request.POST, instance=user_rating)
+        else:
+            form = ProviderRatingForm(request.POST)
+
+        if form.is_valid():
+            rating = form.save(commit=False)
+            rating.provider = provider
+            rating.rated_by = request.user
+            rating.save()
+            messages.success(request, 'Your rating has been saved.')
+            return redirect('providers:detail', provider_id=provider.pk)
+    else:
+        form = ProviderRatingForm(instance=user_rating) if user_rating else ProviderRatingForm()
+
+    return render(request, 'providers/provider_detail.html', {
+        'provider':    provider,
+        'ratings':     ratings,
+        'user_rating': user_rating,
+        'form':        form,
+    })
+
+
 @login_required
 def pending_approval(request):
     try:
@@ -57,17 +95,21 @@ def provider_dashboard(request):
         raise Http404
     if provider.verification_status != 'approved':
         return redirect('providers:pending_approval')
-    return render(request, 'providers/dashboard.html', {'provider': provider})
+    ratings = provider.ratings.select_related('rated_by').all()
+    return render(request, 'providers/dashboard.html', {
+        'provider': provider,
+        'ratings':  ratings,
+    })
 
 
 @login_required
 @user_passes_test(is_staff)
 def admin_provider_review(request):
-    pending = RecoveryProvider.objects.filter(verification_status='pending').select_related('user')
+    pending  = RecoveryProvider.objects.filter(verification_status='pending').select_related('user')
     approved = RecoveryProvider.objects.filter(verification_status='approved').select_related('user')
     rejected = RecoveryProvider.objects.filter(verification_status='rejected').select_related('user')
     return render(request, 'providers/admin_review.html', {
-        'pending': pending,
+        'pending':  pending,
         'approved': approved,
         'rejected': rejected,
     })

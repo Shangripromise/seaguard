@@ -24,7 +24,9 @@
                         <th>Contact</th>
                         <th>Phone</th>
                         <th>Service Area</th>
+                        <th>Rating</th>
                         <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                     {% for provider in providers %}
                     <tr>
@@ -32,7 +34,16 @@
                         <td>{{ provider.contact_person }}</td>
                         <td>{{ provider.phone_number }}</td>
                         <td>{{ provider.service_area }}</td>
+                        <td>
+                            {% if provider.average_rating %}
+                                <span style="color:#e63946;">★</span> {{ provider.average_rating }}
+                                <span style="color:#999; font-size:12px;">({{ provider.rating_count }})</span>
+                            {% else %}
+                                <span style="color:#999; font-size:12px;">No ratings</span>
+                            {% endif %}
+                        </td>
                         <td><span class="badge badge-approved">Verified</span></td>
+                        <td><a href="{% url 'providers:detail' provider.pk %}" class="btn btn-secondary">View</a></td>
                     </tr>
                     {% endfor %}
                 </table>

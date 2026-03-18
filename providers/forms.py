@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import RecoveryProvider
+from .models import RecoveryProvider, ProviderRating
 
 
 class RecoveryProviderRegistrationForm(UserCreationForm):
@@ -37,3 +37,18 @@ class RecoveryProviderRegistrationForm(UserCreationForm):
                 verification_status='pending',
             )
         return user
+
+
+class ProviderRatingForm(forms.ModelForm):
+    score = forms.ChoiceField(
+        choices=[(i, f'{i} star{"s" if i > 1 else ""}') for i in range(5, 0, -1)],
+        widget=forms.RadioSelect,
+        label='Rating'
+    )
+
+    class Meta:
+        model = ProviderRating
+        fields = ['score', 'comment']
+        widgets = {
+            'comment': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Share your experience…'}),
+        }
