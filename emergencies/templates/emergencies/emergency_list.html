@@ -1,37 +1,46 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head><title>SeaGuard - Emergency Requests</title></head>
+<head>
+    <title>SeaGuard - Emergencies</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
 <body>
-    <h1>My Emergency Requests</h1>
-    <a href="{% url 'emergency_submit' %}">Submit New Emergency</a>
-    <a href="{% url 'vessel_list' %}">My Vessels</a>
-    <a href="{% url 'dashboard' %}">Dashboard</a>
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    {% endif %}
-    {% if emergencies %}
-        <table border="1">
-            <tr>
-                <th>Vessel</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th>Actions</th>
-            </tr>
-            {% for emergency in emergencies %}
-            <tr>
-                <td>{{ emergency.vessel.name }}</td>
-                <td>{{ emergency.get_emergency_type_display }}</td>
-                <td>{{ emergency.status }}</td>
-                <td>{{ emergency.created_at|date:"d M Y H:i" }}</td>
-                <td><a href="{% url 'emergency_detail' emergency.pk %}">View</a></td>
-            </tr>
-            {% endfor %}
-        </table>
-    {% else %}
-        <p>No emergency requests submitted yet.</p>
-    {% endif %}
+    <nav>
+        <h1>SEAGUARD</h1>
+        <div>
+            <span style="color:#ccc; font-size:14px;">{{ request.user.username }}</span>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="card">
+            <h2>Emergency Requests</h2>
+            <a href="{% url 'emergencies:emergency_submit' %}" class="btn btn-danger" style="margin-bottom:15px;">+ New Emergency</a>
+            {% if emergencies %}
+                <table>
+                    <tr>
+                        <th>Type</th>
+                        <th>Vessel</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    {% for emergency in emergencies %}
+                    <tr>
+                        <td>{{ emergency.get_emergency_type_display }}</td>
+                        <td>{{ emergency.vessel.name }}</td>
+                        <td>{{ emergency.created_at|date:"d M Y H:i" }}</td>
+                        <td><span class="badge badge-pending">Active</span></td>
+                        <td><a href="{% url 'emergencies:emergency_detail' emergency.pk %}" class="btn btn-secondary">View</a></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>No emergency requests submitted yet.</p>
+            {% endif %}
+        </div>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
 </body>
 </html>

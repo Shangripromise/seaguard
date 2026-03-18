@@ -1,39 +1,47 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head><title>SeaGuard - My Vessels</title></head>
+<head>
+    <title>SeaGuard - My Vessels</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
 <body>
-    <h1>My Vessels</h1>
-    <a href="{% url 'vessel_add' %}">Add New Vessel</a>
-    <a href="{% url 'dashboard' %}">Back to Dashboard</a>
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    {% endif %}
-    {% if vessels %}
-        <table border="1">
-            <tr>
-                <th>Name</th>
-                <th>IMO Number</th>
-                <th>Type</th>
-                <th>Flag</th>
-                <th>Actions</th>
-            </tr>
-            {% for vessel in vessels %}
-            <tr>
-                <td>{{ vessel.name }}</td>
-                <td>{{ vessel.imo_number }}</td>
-                <td>{{ vessel.get_vessel_type_display }}</td>
-                <td>{{ vessel.flag }}</td>
-                <td>
-                    <a href="{% url 'vessel_detail' vessel.pk %}">View</a>
-                    <a href="{% url 'vessel_delete' vessel.pk %}">Delete</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-    {% else %}
-        <p>No vessels added yet.</p>
-    {% endif %}
+    <nav>
+        <h1>SEAGUARD</h1>
+        <div>
+            <span style="color:#ccc; font-size:14px;">{{ request.user.username }}</span>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="card">
+            <h2>My Vessels</h2>
+            <a href="{% url 'vessels:vessel_add' %}" class="btn btn-primary" style="margin-bottom:15px;">+ Add Vessel</a>
+            {% if vessels %}
+                <table>
+                    <tr>
+                        <th>Vessel Name</th>
+                        <th>Type</th>
+                        <th>Registration</th>
+                        <th>Actions</th>
+                    </tr>
+                    {% for vessel in vessels %}
+                    <tr>
+                        <td>{{ vessel.name }}</td>
+                        <td>{{ vessel.vessel_type }}</td>
+                        <td>{{ vessel.registration_number }}</td>
+                        <td>
+                            <a href="{% url 'vessels:vessel_detail' vessel.pk %}" class="btn btn-secondary">View</a>
+                            <a href="{% url 'vessels:vessel_delete' vessel.pk %}" class="btn btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p>No vessels registered yet.</p>
+            {% endif %}
+        </div>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
 </body>
 </html>

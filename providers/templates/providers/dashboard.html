@@ -1,21 +1,38 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
-    <title>SeaGuard - ...</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <title>SeaGuard - Provider Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <h1>{{ provider.company_name }}</h1>
-    <p><strong>Status:</strong> Verified Provider</p>
-    <h3>Business Details</h3>
-    <p><strong>Contact:</strong> {{ provider.contact_person }}</p>
-    <p><strong>Phone:</strong> {{ provider.phone_number }}</p>
-    <p><strong>Registration No:</strong> {{ provider.business_registration }}</p>
-    <p><strong>Service Area:</strong> {{ provider.service_area }}</p>
-    <p><strong>Email:</strong> {{ provider.user.email }}</p>
-    <h3>Quick Links</h3>
-    <p><a href="{% url 'emergencies:list' %}">View Active Emergencies</a></p>
-    <p><a href="{% url 'providers:list' %}">Provider Directory</a></p>
-    <a href="{% url 'logout' %}">Sign Out</a>
+    <nav>
+        <h1>SEAGUARD</h1>
+        <div>
+            <span style="color:#ccc; font-size:14px;">PROVIDER</span>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </nav>
+    <div class="container">
+
+        <div class="card">
+            <h2>{{ provider.company_name }}</h2>
+            <span class="badge badge-approved">Verified Provider</span>
+            <h3 style="margin-top:15px;">Business Details</h3>
+            <p><strong>Contact:</strong> {{ provider.contact_person }}</p>
+            <p><strong>Phone:</strong> {{ provider.phone_number }}</p>
+            <p><strong>Registration No:</strong> {{ provider.business_registration }}</p>
+            <p><strong>Service Area:</strong> {{ provider.service_area }}</p>
+            <p><strong>Email:</strong> {{ provider.user.email }}</p>
+        </div>
+
+        <div class="card">
+            <h2>Quick Links</h2>
+            <a href="{% url 'emergencies:emergency_list' %}" class="btn btn-danger">View Active Emergencies</a>
+            <a href="{% url 'providers:list' %}" class="btn btn-primary">Provider Directory</a>
+            <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
+        </div>
+
+    </div>
 </body>
 </html>

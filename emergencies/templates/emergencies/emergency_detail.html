@@ -1,16 +1,29 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head><title>SeaGuard - Emergency Detail</title></head>
+<head>
+    <title>SeaGuard - Emergency Detail</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
 <body>
-    <h1>Emergency Request Detail</h1>
-    <p>Vessel: {{ emergency.vessel.name }}</p>
-    <p>Type: {{ emergency.get_emergency_type_display }}</p>
-    <p>Status: {{ emergency.status }}</p>
-    <p>Description: {{ emergency.description }}</p>
-    <p>Latitude: {{ emergency.latitude }}</p>
-    <p>Longitude: {{ emergency.longitude }}</p>
-    <p>Submitted: {{ emergency.created_at|date:"d M Y H:i" }}</p>
-    <a href="{% url 'emergency_list' %}">Back to Emergency List</a>
+    <nav>
+        <h1>SEAGUARD</h1>
+        <div>
+            <span style="color:#ccc; font-size:14px;">{{ request.user.username }}</span>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="card">
+            <h2>Emergency Request</h2>
+            <p><strong>Type:</strong> {{ emergency.get_emergency_type_display }}</p>
+            <p><strong>Vessel:</strong> {{ emergency.vessel.name }}</p>
+            <p><strong>Date:</strong> {{ emergency.created_at|date:"d M Y H:i" }}</p>
+            <p><strong>Submitted by:</strong> {{ emergency.submitted_by.username }}</p>
+            <p><strong>Status:</strong> <span class="badge badge-pending">Active</span></p>
+            <a href="{% url 'emergencies:emergency_list' %}" class="btn btn-secondary">Back to Emergencies</a>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
 </body>
 </html>
-
