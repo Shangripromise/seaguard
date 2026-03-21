@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SeaGuard - Find a Provider</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <nav>
+        <h1>SEAGUARD</h1>
+        <div>
+            <span style="color:#ccc; font-size:14px;">{{ request.user.username }}</span>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </nav>
+    <div class="container">
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <h2>Find a recovery provider</h2>
+        <p style="color:#666; margin-bottom:20px;">
+            Search by name, service area or type, and filter by availability.
+        </p>
+
+        <!-- Search form -->
+        <div class="card" style="margin-bottom:24px;">
+            <form method="get" action="{% url 'providers:search' %}">
+                <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
+                    <div style="flex:2; min-width:200px;">
+                        <label style="display:block; font-weight:bold; margin-bottom:4px;">
+                            Keyword
+                        </label>
+                        <input type="text" name="q" value="{{ query }}"
+                               placeholder="Company name, service area or type…"
+                               style="width:100%; padding:8px; box-sizing:border-box;">
+                    </div>
+                    <div style="flex:1; min-width:160px;">
+                        <label style="display:block; font-weight:bold; margin-bottom:4px;">
+                            Availability
+                        </label>
+                        <select name="availability"
+                                style="width:100%; padding:8px; box-sizing:border-box;">
+                            <option value="" {% if not availability %}selected{% endif %}>All</option>
+                            <option value="available"
+                                {% if availability == 'available' %}selected{% endif %}>
+                                Available now
+                            </option>
+                            <option value="unavailable"
+                                {% if availability == 'unavailable' %}selected{% endif %}>
+                                Unavailable
+                            </option>
+                        </select>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary"
+                                style="padding:8px 20px;">
+                            Search
+                        </button>
+                        <a href="{% url 'providers:search' %}"
+                           class="btn btn-secondary"
+                           style="padding:8px 16px; margin-left:8px;">
+                            Clear
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Result count -->
+        {% if query or availability %}
+        <p style="color:#666; margin-bottom:16px;">
+            {{ providers|length }} result{{ providers|length|pluralize }} found
+            {% if query %}for "<strong>{{ query }}</strong>"{% endif %}
+            {% if availability %} — filtered by <strong>{{ availability }}</strong>{% endif %}
+        </p>
+        {% endif %}
+
+        <!-- Results -->
+        {% if providers %}
+        <div class="card">
+            <table>
+                <tr>
+                    <th>Company</th>
+                    <th>Service area</th>
+                    <th>Type</th>
+                    <th>Rating</th>
+                    <th>Availability</th>
+                    <th>Actions</th>
+                </tr>
+                {% for provider in providers %}
+                <tr>
+                    <td><strong>{{ provider.company_name }}</strong></td>
+                    <td>{{ provider.service_area }}</td>
+                    <td>{{ provider.get_service_type_display }}</td>
+                    <td>
+                        {% if provider.average_rating %}
+                            &#9733; {{ provider.average_rating }}
+                            ({{ provider.rating_count }}
+                            review{{ provider.rating_count|pluralize }})
+                        {% else %}
+                            <span style="color:#999;">No ratings yet</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if provider.is_available %}
+                            <span class="badge badge-success">Available</span>
+                        {% else %}
+                            <span class="badge badge-secondary">Unavailable</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'providers:detail' provider.pk %}"
+                           class="btn btn-secondary">
+                            View profile
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        {% elif query or availability %}
+        <div class="card">
+            <p>No approved providers match your search. Try broader terms or clear the filters.</p>
+        </div>
+
+        {% else %}
+        <div class="card">
+            <p>Enter a keyword or select an availability filter above to search providers.</p>
+        </div>
+        {% endif %}
+
+        <div style="margin-top:16px;">
+            <a href="{% url 'providers:list' %}" class="btn btn-secondary">← All providers</a>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary" style="margin-left:8px;">
+                ← Dashboard
+            </a>
+        </div>
+
+    </div>
+</body>
+</html>

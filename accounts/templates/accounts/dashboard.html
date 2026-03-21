@@ -69,6 +69,7 @@
                         <td>
                             <span class="badge
                                 {% if emergency.status == 'active' %}badge-danger
+                                {% elif emergency.status == 'reported' %}badge-warning
                                 {% elif emergency.status == 'resolved' %}badge-success
                                 {% else %}badge-secondary{% endif %}">
                                 {{ emergency.get_status_display }}
@@ -81,6 +82,13 @@
             {% else %}
                 <p>No emergency requests submitted yet.</p>
             {% endif %}
+        </div>
+
+        <!-- CR3 — Member Discounts link, dashboard only per FR-VO-DISC-002 -->
+        <div style="margin-top:16px;">
+            <a href="{% url 'member_discounts' %}" class="btn btn-secondary">
+                Member Discounts
+            </a>
         </div>
 
     </div>

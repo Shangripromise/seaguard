@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SeaGuard - Member Discounts</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <nav>
+        <h1>SEAGUARD</h1>
+        <div>
+            <span style="color:#ccc; font-size:14px;">{{ request.user.username }}</span>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </nav>
+    <div class="container">
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <h2>Member Discounts</h2>
+            <p style="color:#666; margin-bottom:20px;">
+                Exclusive offers for SeaGuard members from our approved marine partners.
+                Present your membership code at point of purchase.
+            </p>
+
+            <table>
+                <tr>
+                    <th>Partner</th>
+                    <th>Category</th>
+                    <th>Offer</th>
+                    <th>Discount code</th>
+                    <th>Valid until</th>
+                </tr>
+                {% for discount in discounts %}
+                <tr>
+                    <td><strong>{{ discount.partner }}</strong></td>
+                    <td>{{ discount.category }}</td>
+                    <td>{{ discount.offer }}</td>
+                    <td>
+                        <span style="font-family:monospace; background:#f0f0f0;
+                                     padding:2px 8px; border-radius:4px;
+                                     font-size:13px;">
+                            {{ discount.code }}
+                        </span>
+                    </td>
+                    <td>{{ discount.valid_until }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div style="margin-top:16px;">
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                ← Back to Dashboard
+            </a>
+        </div>
+
+    </div>
+</body>
+</html> 

@@ -9,7 +9,7 @@
     <nav>
         <h1>SEAGUARD</h1>
         <div>
-            <span style="color:#ccc; font-size:14px;">ADMIN</span>
+            <span style="color:#ccc; font-size:14px;">{{ request.user.username }}</span>
             <a href="{% url 'logout' %}">Logout</a>
         </div>
     </nav>
@@ -23,51 +23,153 @@
         </div>
         {% endif %}
 
-        <div class="stats-row">
-            <div class="stat-tile">
-                <h2>{{ total_users }}</h2>
-                <p>Members</p>
+        <h2>Admin dashboard</h2>
+        <p style="color:#666; margin-bottom:20px;">System overview and quick links.</p>
+
+        <!-- Stats row -->
+        <div style="display:flex; gap:16px; margin-bottom:24px; flex-wrap:wrap;">
+            <div class="card" style="flex:1; min-width:120px; text-align:center; padding:16px;">
+                <div style="font-size:2rem; font-weight:bold;">{{ total_users }}</div>
+                <div style="color:#666; font-size:13px;">Registered users</div>
             </div>
-            <div class="stat-tile">
-                <h2>{{ total_vessels }}</h2>
-                <p>Vessels</p>
+            <div class="card" style="flex:1; min-width:120px; text-align:center; padding:16px;">
+                <div style="font-size:2rem; font-weight:bold;">{{ total_vessels }}</div>
+                <div style="color:#666; font-size:13px;">Registered vessels</div>
             </div>
-            <div class="stat-tile">
-                <h2>{{ total_emergencies }}</h2>
-                <p>Emergencies</p>
+            <div class="card" style="flex:1; min-width:120px; text-align:center;
+                         padding:16px; background:#d4edda;">
+                <div style="font-size:2rem; font-weight:bold; color:#155724;">
+                    {{ active_emergencies|length }}
+                </div>
+                <div style="color:#666; font-size:13px;">Active emergencies</div>
+            </div>
+            <div class="card" style="flex:1; min-width:120px; text-align:center;
+                         padding:16px; background:#fff3cd;">
+                <div style="font-size:2rem; font-weight:bold; color:#856404;">
+                    {{ reported_emergencies|length }}
+                </div>
+                <div style="color:#666; font-size:13px;">Awaiting dispatch</div>
+            </div>
+            <div class="card" style="flex:1; min-width:120px; text-align:center;
+                         padding:16px;
+                         {% if pending_ratings > 0 %}background:#fff3cd;{% endif %}">
+                <div style="font-size:2rem; font-weight:bold;
+                            {% if pending_ratings > 0 %}color:#856404;{% endif %}">
+                    {{ pending_ratings }}
+                </div>
+                <div style="color:#666; font-size:13px;">Ratings pending review</div>
+            </div>
+            <div class="card" style="flex:1; min-width:120px; text-align:center; padding:16px;">
+                <div style="font-size:2rem; font-weight:bold;">{{ pending_providers }}</div>
+                <div style="color:#666; font-size:13px;">Providers pending</div>
             </div>
         </div>
 
-        <div class="card">
-            <h2>Active Emergencies</h2>
-            {% if active_emergencies %}
-                <table>
-                    <tr>
-                        <th>Vessel</th>
-                        <th>Type</th>
-                        <th>Submitted By</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                    </tr>
-                    {% for emergency in active_emergencies %}
-                    <tr>
-                        <td>{{ emergency.vessel.name }}</td>
-                        <td>{{ emergency.get_emergency_type_display }}</td>
-                        <td>{{ emergency.submitted_by.username }}</td>
-                        <td>{{ emergency.created_at|date:"d M Y H:i" }}</td>
-                        <td><span class="badge badge-pending">Active</span></td>
-                    </tr>
-                    {% endfor %}
-                </table>
-            {% else %}
-                <p>No active emergencies.</p>
-            {% endif %}
+        <!-- Quick links -->
+        <div class="card" style="margin-bottom:24px;">
+            <h3 style="margin-bottom:16px;">Quick links</h3>
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <a href="{% url 'emergencies:admin_job_dashboard' %}"
+                   class="btn btn-primary">
+                    Live job monitoring
+                </a>
+                <a href="{% url 'providers:admin_rating_moderation' %}"
+                   class="btn btn-primary">
+                    Rating moderation
+                    {% if pending_ratings > 0 %}({{ pending_ratings }}){% endif %}
+                </a>
+                <a href="{% url 'providers:admin_review' %}"
+                   class="btn btn-secondary">
+                    Provider approvals
+                    {% if pending_providers > 0 %}({{ pending_providers }}){% endif %}
+                </a>
+                <a href="{% url 'providers:search' %}"
+                   class="btn btn-secondary">
+                    Provider search
+                </a>
+                <a href="{% url 'providers:list' %}"
+                   class="btn btn-secondary">
+                    Provider directory
+                </a>
+                <a href="{% url 'emergencies:emergency_list' %}"
+                   class="btn btn-secondary">
+                    All emergencies
+                </a>
+            </div>
         </div>
 
-        <div class="card">
-            <h2>Quick Links</h2>
-            <a href="{% url 'providers:admin_review' %}" class="btn btn-primary">Provider Review Queue</a>
-            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+        <!-- Active emergencies -->
+        {% if active_emergencies %}
+        <div class="card" style="margin-bottom:24px;">
+            <h3>Active emergencies</h3>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Vessel</th>
+                    <th>Submitted by</th>
+                    <th>Assigned provider</th>
+                    <th>Actions</th>
+                </tr>
+                {% for e in active_emergencies %}
+                <tr>
+                    <td>
+                        <a href="{% url 'emergencies:emergency_detail' e.pk %}">#{{ e.pk }}</a>
+                    </td>
+                    <td>{{ e.get_emergency_type_display }}</td>
+                    <td>{{ e.vessel.name }}</td>
+                    <td>{{ e.submitted_by.username }}</td>
+                    <td>
+                        {% if e.assigned_provider %}
+                            {{ e.assigned_provider.company_name }}
+                        {% else %}
+                            <span style="color:#999;">Unassigned</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'emergencies:emergency_detail' e.pk %}"
+                           class="btn btn-secondary">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- Awaiting dispatch -->
+        {% if reported_emergencies %}
+        <div class="card" style="border-left:4px solid #ffc107; margin-bottom:24px;">
+            <h3 style="color:#856404;">Awaiting dispatch</h3>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Vessel</th>
+                    <th>Submitted by</th>
+                    <th>Actions</th>
+                </tr>
+                {% for e in reported_emergencies %}
+                <tr>
+                    <td>
+                        <a href="{% url 'emergencies:emergency_detail' e.pk %}">#{{ e.pk }}</a>
+                    </td>
+                    <td>{{ e.get_emergency_type_display }}</td>
+                    <td>{{ e.vessel.name }}</td>
+                    <td>{{ e.submitted_by.username }}</td>
+                    <td>
+                        <a href="{% url 'emergencies:admin_job_dashboard' %}"
+                           class="btn btn-primary">
+                            Assign in live dashboard
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
+
+        <div style="margin-top:8px;">
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">← Back to dashboard</a>
         </div>
 
     </div>
