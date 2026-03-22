@@ -1,39 +1,24 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>SeaGuard - Update Status</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <nav>
-        <h1>SEAGUARD</h1>
-        <div>
-            <span style="color:#ccc; font-size:14px;">{{ request.user.username }}</span>
-            <a href="{% url 'logout' %}">Logout</a>
-        </div>
-    </nav>
-    <div class="container">
-        <div class="card">
-            <h2>Update Emergency Status</h2>
-            <p style="color:#555; font-size:14px;">
-                Emergency #{{ emergency.pk }} — {{ emergency.vessel.name }}<br>
-                Current status: <strong>{{ emergency.get_status_display }}</strong>
-            </p>
-            <form method="post">
-                {% csrf_token %}
-                <div style="margin-bottom:1rem;">
-                    <label><strong>New status</strong></label><br>
-                    {{ form.new_status }}
-                </div>
-                <div style="margin-bottom:1rem;">
-                    <label><strong>Notes (optional)</strong></label><br>
-                    {{ form.notes }}
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-                <a href="{% url 'emergencies:emergency_detail' emergency.pk %}" class="btn btn-secondary">Cancel</a>
-            </form>
-        </div>
+{% extends "base.html" %}
+{% block title %}SeaGuard - Update Status{% endblock %}
+{% block content %}
+    <div class="card">
+        <h2>Update Emergency Status</h2>
+        <p style="color:#555; font-size:14px;">
+            Emergency #{{ emergency.pk }} — {{ emergency.vessel.name }}<br>
+            Current status: <strong>{{ emergency.get_status_display }}</strong>
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <div style="margin-bottom:1rem;">
+                <label><strong>New status</strong></label><br>
+                {{ form.new_status }}
+            </div>
+            <div style="margin-bottom:1rem;">
+                <label><strong>Notes (optional)</strong></label><br>
+                {{ form.notes }}
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="{% url 'emergencies:emergency_detail' emergency.pk %}" class="btn btn-secondary">Cancel</a>
+        </form>
     </div>
-</body>
-</html>
+{% endblock %}

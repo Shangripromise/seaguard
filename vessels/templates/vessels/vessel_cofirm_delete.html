@@ -1,29 +1,13 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>SeaGuard - Delete Vessel</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <nav>
-        <h1>SEAGUARD</h1>
-        <div>
-            <span style="color:#ccc; font-size:14px;">{{ request.user.username }}</span>
-            <a href="{% url 'logout' %}">Logout</a>
-        </div>
-    </nav>
-    <div class="container">
-        <div class="card">
-            <h2>Delete Vessel</h2>
-            <p>Are you sure you want to delete <strong>{{ vessel.name }}</strong>?</p>
-            <p>This action cannot be undone.</p>
-            <form method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Yes, Delete</button>
-                <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
-            </form>
-        </div>
+{% extends "base.html" %}
+{% block title %}SeaGuard - {{ vessel.name }}{% endblock %}
+{% block content %}
+    <div class="card">
+        <h2>{{ vessel.name }}</h2>
+        <p><strong>Type:</strong> {{ vessel.vessel_type }}</p>
+        <p><strong>Registration:</strong> {{ vessel.registration_number }}</p>
+        <p><strong>Description:</strong> {{ vessel.description }}</p>
+        <a href="{% url 'vessels:vessel_delete' vessel.pk %}" class="btn btn-danger">Delete Vessel</a>
+        <a href="{% url 'vessels:vessel_list' %}" class="btn btn-secondary">← My Vessels</a>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">← Dashboard</a>
     </div>
-</body>
-</html>
+{% endblock %}

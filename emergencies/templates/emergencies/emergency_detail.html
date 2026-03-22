@@ -1,63 +1,53 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>SeaGuard - Emergency Detail</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <nav>
-        <h1>SEAGUARD</h1>
-        <div>
-            <span style="color:#ccc; font-size:14px;">{{ request.user.username }}</span>
-            <a href="{% url 'logout' %}">Logout</a>
-        </div>
-    </nav>
-    <div class="container">
+{% extends "base.html" %}
+{% block title %}SeaGuard - Emergencies{% endblock %}
+{% block content %}
 
-        <!-- Emergency info card -->
-        <div class="card">
-            <h2>Emergency Request</h2>
-            <p><strong>Type:</strong> {{ emergency.get_emergency_type_display }}</p>
-            <p><strong>Vessel:</strong> {{ emergency.vessel.name }}</p>
-            <p><strong>Date:</strong> {{ emergency.created_at|date:"d M Y H:i" }}</p>
-            <p><strong>Submitted by:</strong> {{ emergency.submitted_by.username }}</p>
-            <p><strong>Description:</strong> {{ emergency.description }}</p>
-            <p>
-                <strong>Status:</strong>
-                <span class="badge
-                    {% if emergency.status == 'active' %}badge-danger
-                    {% elif emergency.status == 'resolved' %}badge-success
-                    {% else %}badge-secondary{% endif %}">
-                    {{ emergency.get_status_display }}
-                </span>
-            </p>
-            {% if allowed %}
-            <a href="{% url 'emergencies:update_status' emergency.pk %}" class="btn btn-primary">Update status</a>
-            {% endif %}
-            <a href="{% url 'emergencies:emergency_list' %}" class="btn btn-secondary">Back to Emergencies</a>
-            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
-        </div>
+    <div class="card">
+        <h2>Emergency Requests</h2>
+        <a href="{% url 'emergencies:emergency_submit' %}" class="btn btn-danger" style="margin-bottom:15px;">▲ Request Recovery</a>
 
-        <!-- Status history -->
-        {% if status_updates %}
-        <div class="card" style="margin-top:1rem;">
-            <h3>Status history</h3>
-            <ul style="list-style:none; padding:0; margin:0;">
-                {% for update in status_updates %}
-                <li style="margin-bottom:0.75rem; font-size:14px; color:#555;">
-                    <strong>{{ update.created_at|date:"d M Y H:i" }}</strong>
-                    — {{ update.changed_by.username }}
-                    changed from <em>{{ update.from_status }}</em> to <em>{{ update.to_status }}</em>
-                    {% if update.notes %}
-                    <br><span style="margin-left:1rem;">{{ update.notes }}</span>
+        {% if emergencies %}
+        <table>
+            <tr>
+                <th>Type</th>
+                <th>Vessel</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Assigned provider</th>
+                <th>Actions</th>
+            </tr>
+            {% for emergency in emergencies %}
+            <tr>
+                <td>{{ emergency.get_emergency_type_display }}</td>
+                <td>{{ emergency.vessel.name }}</td>
+                <td>{{ emergency.created_at|date:"d M Y H:i" }}</td>
+                <td>
+                    <span class="badge
+                        {% if emergency.status == 'active' %}badge-danger
+                        {% elif emergency.status == 'reported' %}badge-warning
+                        {% elif emergency.status == 'resolved' %}badge-success
+                        {% else %}badge-secondary{% endif %}">
+                        {{ emergency.get_status_display }}
+                    </span>
+                </td>
+                <td>
+                    {% if emergency.assigned_provider %}
+                        {{ emergency.assigned_provider.company_name }}
+                    {% else %}
+                        <span style="color:#999;">Awaiting dispatch</span>
                     {% endif %}
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
+                </td>
+                <td>
+                    <a href="{% url 'emergencies:emergency_detail' emergency.pk %}" class="btn btn-secondary">View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>No emergency requests submitted yet.</p>
         {% endif %}
-
     </div>
-</body>
-</html>
+
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">← Back to Dashboard</a>
+
+{% endblock %}

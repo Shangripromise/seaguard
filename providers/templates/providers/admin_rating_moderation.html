@@ -1,173 +1,133 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>SeaGuard - Rating Moderation</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <nav>
-        <h1>SEAGUARD</h1>
-        <div>
-            <span style="color:#ccc; font-size:14px;">{{ request.user.username }}</span>
-            <a href="{% url 'logout' %}">Logout</a>
-        </div>
-    </nav>
-    <div class="container">
+{% extends "base.html" %}
+{% block title %}SeaGuard - Rating Moderation{% endblock %}
+{% block content %}
 
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="message">{{ message }}</div>
-            {% endfor %}
-        </div>
+    <h2>Rating moderation queue</h2>
+    <p style="color:#666; margin-bottom:20px;">
+        Review, approve or reject submitted provider ratings before they go public.
+    </p>
+
+    <!-- Pending -->
+    <h3 style="margin-bottom:12px;">
+        Pending review
+        {% if pending %}
+            <span class="badge badge-warning" style="font-size:14px;">{{ pending|length }}</span>
         {% endif %}
+    </h3>
 
-        <h2>Rating moderation queue</h2>
-        <p style="color:#666; margin-bottom:20px;">
-            Review, approve or reject submitted provider ratings before they go public.
-        </p>
-
-        <!-- Pending -->
-        <h3 style="margin-bottom:12px;">
-            Pending review
-            {% if pending %}
-                <span class="badge badge-warning" style="font-size:14px;">
-                    {{ pending|length }}
-                </span>
-            {% endif %}
-        </h3>
-
-        <div class="card" style="margin-bottom:32px;">
-            {% if pending %}
-            <table>
-                <tr>
-                    <th>Submitted</th>
-                    <th>Reviewer</th>
-                    <th>Provider</th>
-                    <th>Score</th>
-                    <th>Comment</th>
-                    <th>Actions</th>
-                </tr>
-                {% for rating in pending %}
-                <tr>
-                    <td>{{ rating.created_at|date:"d M Y H:i" }}</td>
-                    <td>{{ rating.rated_by.username }}</td>
-                    <td>{{ rating.provider.company_name }}</td>
-                    <td>
-                        {% for i in "12345" %}
-                            {% if forloop.counter <= rating.score %}&#9733;{% else %}&#9734;{% endif %}
-                        {% endfor %}
-                        ({{ rating.score }}/5)
-                    </td>
-                    <td>{{ rating.comment|default:"—" }}</td>
-                    <td>
-                        <!-- Approve -->
-                        <form method="post"
-                              action="{% url 'providers:rating_approve' rating.pk %}"
-                              style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-primary"
-                                    style="font-size:12px; padding:4px 10px;">
-                                Approve
-                            </button>
-                        </form>
-
-                        <!-- Reject -->
-                        <form method="post"
-                              action="{% url 'providers:rating_reject' rating.pk %}"
-                              style="display:inline; margin-left:4px;">
-                            {% csrf_token %}
-                            <select name="rejection_reason"
-                                    style="font-size:12px; padding:2px;"
-                                    required>
-                                {% for value, label in rejection_reasons %}
-                                <option value="{{ value }}">{{ label }}</option>
-                                {% endfor %}
-                            </select>
-                            <button type="submit" class="btn btn-danger"
-                                    style="font-size:12px; padding:4px 10px;"
-                                    onclick="return confirm('Reject this rating?');">
-                                Reject
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
-            {% else %}
-            <p style="color:#155724;">&#10003; No ratings pending review.</p>
-            {% endif %}
-        </div>
-
-        <!-- Approved -->
-        <h3 style="margin-bottom:12px;">
-            Recently approved
-            <span class="badge badge-success">{{ approved|length }}</span>
-        </h3>
-        <div class="card" style="margin-bottom:32px;">
-            {% if approved %}
-            <table>
-                <tr>
-                    <th>Approved</th>
-                    <th>Reviewer</th>
-                    <th>Provider</th>
-                    <th>Score</th>
-                    <th>Moderated by</th>
-                </tr>
-                {% for rating in approved %}
-                <tr>
-                    <td>{{ rating.moderated_at|date:"d M Y H:i" }}</td>
-                    <td>{{ rating.rated_by.username }}</td>
-                    <td>{{ rating.provider.company_name }}</td>
-                    <td>&#9733; {{ rating.score }}/5</td>
-                    <td>{{ rating.moderated_by.username|default:"—" }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-            {% else %}
-            <p style="color:#666;">No approved ratings yet.</p>
-            {% endif %}
-        </div>
-
-        <!-- Rejected -->
-        <h3 style="margin-bottom:12px;">
-            Recently rejected
-            <span class="badge badge-danger">{{ rejected|length }}</span>
-        </h3>
-        <div class="card">
-            {% if rejected %}
-            <table>
-                <tr>
-                    <th>Rejected</th>
-                    <th>Reviewer</th>
-                    <th>Provider</th>
-                    <th>Score</th>
-                    <th>Reason</th>
-                    <th>Moderated by</th>
-                </tr>
-                {% for rating in rejected %}
-                <tr>
-                    <td>{{ rating.moderated_at|date:"d M Y H:i" }}</td>
-                    <td>{{ rating.rated_by.username }}</td>
-                    <td>{{ rating.provider.company_name }}</td>
-                    <td>&#9733; {{ rating.score }}/5</td>
-                    <td>{{ rating.get_rejection_reason_display|default:"—" }}</td>
-                    <td>{{ rating.moderated_by.username|default:"—" }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-            {% else %}
-            <p style="color:#666;">No rejected ratings yet.</p>
-            {% endif %}
-        </div>
-
-        <div style="margin-top:16px;">
-            <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
-                ← Back to admin dashboard
-            </a>
-        </div>
-
+    <div class="card" style="margin-bottom:32px;">
+        {% if pending %}
+        <table>
+            <tr>
+                <th>Submitted</th>
+                <th>Reviewer</th>
+                <th>Provider</th>
+                <th>Score</th>
+                <th>Comment</th>
+                <th>Actions</th>
+            </tr>
+            {% for rating in pending %}
+            <tr>
+                <td>{{ rating.created_at|date:"d M Y H:i" }}</td>
+                <td>{{ rating.rated_by.username }}</td>
+                <td>{{ rating.provider.company_name }}</td>
+                <td>
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= rating.score %}&#9733;{% else %}&#9734;{% endif %}
+                    {% endfor %}
+                    ({{ rating.score }}/5)
+                </td>
+                <td>{{ rating.comment|default:"—" }}</td>
+                <td>
+                    <!-- Approve -->
+                    <form method="post" action="{% url 'providers:rating_approve' rating.pk %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary" style="font-size:12px; padding:4px 10px;">Approve</button>
+                    </form>
+                    <!-- Reject -->
+                    <form method="post" action="{% url 'providers:rating_reject' rating.pk %}" style="display:inline; margin-left:4px;">
+                        {% csrf_token %}
+                        <select name="rejection_reason" style="font-size:12px; padding:2px;" required>
+                            {% for value, label in rejection_reasons %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-danger" style="font-size:12px; padding:4px 10px;"
+                                onclick="return confirm('Reject this rating?');">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p style="color:#155724;">&#10003; No ratings pending review.</p>
+        {% endif %}
     </div>
-</body>
-</html>
+
+    <!-- Approved -->
+    <h3 style="margin-bottom:12px;">
+        Recently approved
+        <span class="badge badge-success">{{ approved|length }}</span>
+    </h3>
+    <div class="card" style="margin-bottom:32px;">
+        {% if approved %}
+        <table>
+            <tr>
+                <th>Approved</th>
+                <th>Reviewer</th>
+                <th>Provider</th>
+                <th>Score</th>
+                <th>Moderated by</th>
+            </tr>
+            {% for rating in approved %}
+            <tr>
+                <td>{{ rating.moderated_at|date:"d M Y H:i" }}</td>
+                <td>{{ rating.rated_by.username }}</td>
+                <td>{{ rating.provider.company_name }}</td>
+                <td>&#9733; {{ rating.score }}/5</td>
+                <td>{{ rating.moderated_by.username|default:"—" }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p style="color:#666;">No approved ratings yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Rejected -->
+    <h3 style="margin-bottom:12px;">
+        Recently rejected
+        <span class="badge badge-danger">{{ rejected|length }}</span>
+    </h3>
+    <div class="card">
+        {% if rejected %}
+        <table>
+            <tr>
+                <th>Rejected</th>
+                <th>Reviewer</th>
+                <th>Provider</th>
+                <th>Score</th>
+                <th>Reason</th>
+                <th>Moderated by</th>
+            </tr>
+            {% for rating in rejected %}
+            <tr>
+                <td>{{ rating.moderated_at|date:"d M Y H:i" }}</td>
+                <td>{{ rating.rated_by.username }}</td>
+                <td>{{ rating.provider.company_name }}</td>
+                <td>&#9733; {{ rating.score }}/5</td>
+                <td>{{ rating.get_rejection_reason_display|default:"—" }}</td>
+                <td>{{ rating.moderated_by.username|default:"—" }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p style="color:#666;">No rejected ratings yet.</p>
+        {% endif %}
+    </div>
+
+    <div style="margin-top:16px;">
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">← Back to admin dashboard</a>
+    </div>
+
+{% endblock %}

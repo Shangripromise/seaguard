@@ -1,151 +1,119 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>SeaGuard - Live Job Monitoring</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <nav>
-        <h1>SEAGUARD</h1>
-        <div>
-            <span style="color:#ccc; font-size:14px;">{{ request.user.username }}</span>
-            <a href="{% url 'logout' %}">Logout</a>
+{% extends "base.html" %}
+{% block title %}SeaGuard - Live Job Monitoring{% endblock %}
+{% block content %}
+
+    <h2>Live job monitoring</h2>
+    <p style="color:#666; margin-bottom:20px;">Real-time overview of all emergency requests.</p>
+
+    <!-- Summary stats -->
+    <div style="display:flex; gap:16px; margin-bottom:24px; flex-wrap:wrap;">
+        <div class="card" style="flex:1; min-width:120px; text-align:center; padding:16px;">
+            <div style="font-size:2rem; font-weight:bold;">{{ total }}</div>
+            <div style="color:#666; font-size:13px;">Total</div>
         </div>
-    </nav>
-    <div class="container">
-
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="message">{{ message }}</div>
-            {% endfor %}
+        <div class="card" style="flex:1; min-width:120px; text-align:center; padding:16px; background:#d4edda;">
+            <div style="font-size:2rem; font-weight:bold; color:#155724;">{{ active_count }}</div>
+            <div style="color:#666; font-size:13px;">Active</div>
         </div>
-        {% endif %}
-
-        <h2>Live job monitoring</h2>
-        <p style="color:#666; margin-bottom:20px;">Real-time overview of all emergency requests.</p>
-
-        <!-- Summary stats -->
-        <div style="display:flex; gap:16px; margin-bottom:24px; flex-wrap:wrap;">
-            <div class="card" style="flex:1; min-width:120px; text-align:center; padding:16px;">
-                <div style="font-size:2rem; font-weight:bold;">{{ total }}</div>
-                <div style="color:#666; font-size:13px;">Total</div>
-            </div>
-            <div class="card" style="flex:1; min-width:120px; text-align:center; padding:16px; background:#d4edda;">
-                <div style="font-size:2rem; font-weight:bold; color:#155724;">{{ active_count }}</div>
-                <div style="color:#666; font-size:13px;">Active</div>
-            </div>
-            <div class="card" style="flex:1; min-width:120px; text-align:center; padding:16px; background:#fff3cd;">
-                <div style="font-size:2rem; font-weight:bold; color:#856404;">{{ reported_count }}</div>
-                <div style="color:#666; font-size:13px;">Awaiting dispatch</div>
-            </div>
-            <div class="card" style="flex:1; min-width:120px; text-align:center; padding:16px;">
-                <div style="font-size:2rem; font-weight:bold; color:#666;">{{ resolved_count }}</div>
-                <div style="color:#666; font-size:13px;">Resolved</div>
-            </div>
+        <div class="card" style="flex:1; min-width:120px; text-align:center; padding:16px; background:#fff3cd;">
+            <div style="font-size:2rem; font-weight:bold; color:#856404;">{{ reported_count }}</div>
+            <div style="color:#666; font-size:13px;">Awaiting dispatch</div>
         </div>
-
-        <!-- Legend -->
-        <div style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; font-size:13px;">
-            <span class="badge badge-success">&#9679; Active — provider assigned</span>
-            <span class="badge" style="background:#ffc107; color:#333;">&#9679; Reported — under 10 min</span>
-            <span class="badge badge-danger">&#9679; Reported — over 10 min (urgent)</span>
-            <span class="badge badge-secondary">&#9679; Resolved / cancelled</span>
+        <div class="card" style="flex:1; min-width:120px; text-align:center; padding:16px;">
+            <div style="font-size:2rem; font-weight:bold; color:#666;">{{ resolved_count }}</div>
+            <div style="color:#666; font-size:13px;">Resolved</div>
         </div>
-
-        <div class="card">
-            {% if emergencies %}
-            <table>
-                <tr>
-                    <th>ID</th>
-                    <th>Status</th>
-                    <th>Type</th>
-                    <th>Vessel</th>
-                    <th>Submitted by</th>
-                    <th>Assigned provider</th>
-                    <th>Elapsed (min)</th>
-                    <th>Actions</th>
-                </tr>
-                {% for e in emergencies %}
-                <tr>
-                    <td><a href="{% url 'emergencies:emergency_detail' e.pk %}">#{{ e.pk }}</a></td>
-                    <td>
-                        <span class="badge
-                            {% if e.colour == 'success' %}badge-success
-                            {% elif e.colour == 'danger' %}badge-danger
-                            {% elif e.colour == 'warning' %}badge-warning
-                            {% else %}badge-secondary{% endif %}">
-                            {{ e.get_status_display }}
-                        </span>
-                    </td>
-                    <td>{{ e.get_emergency_type_display }}</td>
-                    <td>{{ e.vessel.name }}</td>
-                    <td>{{ e.submitted_by.username }}</td>
-                    <td>
-                        {% if e.assigned_provider %}
-                            {{ e.assigned_provider.company_name }}
-                        {% else %}
-                            <span style="color:#999;">Unassigned</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if e.colour == 'danger' %}
-                            <strong style="color:#dc3545;">{{ e.elapsed }}</strong>
-                        {% else %}
-                            {{ e.elapsed }}
-                        {% endif %}
-                    </td>
-                    <td>
-                        <!-- Assign form -->
-                        {% if e.status == 'reported' or e.status == 'active' %}
-                        <form method="post" action="{% url 'emergencies:admin_assign' e.pk %}"
-                              style="display:inline;">
-                            {% csrf_token %}
-                            <select name="provider_id" style="font-size:12px; padding:2px;">
-                                <option value="">— Assign —</option>
-                                {% for p in approved_providers %}
-                                <option value="{{ p.pk }}"
-                                    {% if e.assigned_provider and e.assigned_provider.pk == p.pk %}
-                                    selected{% endif %}>
-                                    {{ p.company_name }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                            <button type="submit" class="btn btn-primary"
-                                    style="font-size:12px; padding:4px 8px;">
-                                Assign
-                            </button>
-                        </form>
-                        {% endif %}
-
-                        <!-- Escalate form -->
-                        {% if e.status != 'resolved' and e.status != 'cancelled' %}
-                        <form method="post" action="{% url 'emergencies:admin_escalate' e.pk %}"
-                              style="display:inline; margin-left:4px;"
-                              onsubmit="return confirm('Escalate #{{ e.pk }} to coastguard (999/112)? This cannot be undone.');">
-                            {% csrf_token %}
-                            <input type="hidden" name="reason"
-                                   value="No providers available — escalated to coastguard.">
-                            <button type="submit" class="btn btn-danger"
-                                    style="font-size:12px; padding:4px 8px;">
-                                Escalate
-                            </button>
-                        </form>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
-            {% else %}
-            <p>No emergency requests on record yet.</p>
-            {% endif %}
-        </div>
-
-        <div style="margin-top:16px;">
-            <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">← Back to admin dashboard</a>
-        </div>
-
     </div>
-</body>
-</html>
+
+    <!-- Legend -->
+    <div style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; font-size:13px;">
+        <span class="badge badge-success">&#9679; Active — provider assigned</span>
+        <span class="badge" style="background:#ffc107; color:#333;">&#9679; Reported — under 10 min</span>
+        <span class="badge badge-danger">&#9679; Reported — over 10 min (urgent)</span>
+        <span class="badge badge-secondary">&#9679; Resolved / cancelled</span>
+    </div>
+
+    <div class="card">
+        {% if emergencies %}
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Status</th>
+                <th>Type</th>
+                <th>Vessel</th>
+                <th>Submitted by</th>
+                <th>Assigned provider</th>
+                <th>Elapsed (min)</th>
+                <th>Actions</th>
+            </tr>
+            {% for e in emergencies %}
+            <tr>
+                <td><a href="{% url 'emergencies:emergency_detail' e.pk %}">#{{ e.pk }}</a></td>
+                <td>
+                    <span class="badge
+                        {% if e.colour == 'success' %}badge-success
+                        {% elif e.colour == 'danger' %}badge-danger
+                        {% elif e.colour == 'warning' %}badge-warning
+                        {% else %}badge-secondary{% endif %}">
+                        {{ e.get_status_display }}
+                    </span>
+                </td>
+                <td>{{ e.get_emergency_type_display }}</td>
+                <td>{{ e.vessel.name }}</td>
+                <td>{{ e.submitted_by.username }}</td>
+                <td>
+                    {% if e.assigned_provider %}
+                        {{ e.assigned_provider.company_name }}
+                    {% else %}
+                        <span style="color:#999;">Unassigned</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if e.colour == 'danger' %}
+                        <strong style="color:#dc3545;">{{ e.elapsed }}</strong>
+                    {% else %}
+                        {{ e.elapsed }}
+                    {% endif %}
+                </td>
+                <td>
+                    <!-- Assign form -->
+                    {% if e.status == 'reported' or e.status == 'active' %}
+                    <form method="post" action="{% url 'emergencies:admin_assign' e.pk %}" style="display:inline;">
+                        {% csrf_token %}
+                        <select name="provider_id" style="font-size:12px; padding:2px;">
+                            <option value="">— Assign —</option>
+                            {% for p in approved_providers %}
+                            <option value="{{ p.pk }}"
+                                {% if e.assigned_provider and e.assigned_provider.pk == p.pk %}selected{% endif %}>
+                                {{ p.company_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-primary" style="font-size:12px; padding:4px 8px;">Assign</button>
+                    </form>
+                    {% endif %}
+
+                    <!-- Escalate form -->
+                    {% if e.status != 'resolved' and e.status != 'cancelled' %}
+                    <form method="post" action="{% url 'emergencies:admin_escalate' e.pk %}"
+                          style="display:inline; margin-left:4px;"
+                          onsubmit="return confirm('Escalate #{{ e.pk }} to coastguard (999/112)? This cannot be undone.');">
+                        {% csrf_token %}
+                        <input type="hidden" name="reason" value="No providers available — escalated to coastguard.">
+                        <button type="submit" class="btn btn-danger" style="font-size:12px; padding:4px 8px;">Escalate</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>No emergency requests on record yet.</p>
+        {% endif %}
+    </div>
+
+    <div style="margin-top:16px;">
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">← Back to admin dashboard</a>
+    </div>
+
+{% endblock %}

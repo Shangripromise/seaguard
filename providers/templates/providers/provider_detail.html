@@ -1,94 +1,71 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>SeaGuard - {{ provider.company_name }}</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <nav>
-        <h1>SEAGUARD</h1>
-        <div>
-            <span style="color:#ccc; font-size:14px;">{{ request.user.username }}</span>
-            <a href="{% url 'logout' %}">Logout</a>
-        </div>
-    </nav>
-    <div class="container">
+{% extends "base.html" %}
+{% block title %}SeaGuard - {{ provider.company_name }}{% endblock %}
+{% block content %}
 
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="message">{{ message }}</div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        <!-- Provider info -->
-        <div class="card">
-            <h2>{{ provider.company_name }}</h2>
-            <p><strong>Contact:</strong> {{ provider.contact_person }}</p>
-            <p><strong>Phone:</strong> {{ provider.phone_number }}</p>
-            <p><strong>Service area:</strong> {{ provider.service_area }}</p>
-            <p>
-                <strong>Rating:</strong>
-                {% if provider.average_rating %}
-                    {{ provider.average_rating }} / 5
-                    <span style="color:#999; font-size:13px;">({{ provider.rating_count }} review{{ provider.rating_count|pluralize }})</span>
-                {% else %}
-                    <span style="color:#999;">No ratings yet</span>
-                {% endif %}
-            </p>
-            <a href="{% url 'providers:list' %}" class="btn btn-secondary">Back to Providers</a>
-        </div>
-
-        <!-- Rating form -->
-        {% if request.user.is_authenticated %}
-        <div class="card" style="margin-top:1rem;">
-            <h3>{% if user_rating %}Update your rating{% else %}Leave a rating{% endif %}</h3>
-            <form method="post">
-                {% csrf_token %}
-                <div style="margin-bottom:1rem;">
-                    <label><strong>Rating</strong></label><br>
-                    {% for radio in form.score %}
-                        <label style="margin-right:1rem; cursor:pointer;">
-                            {{ radio.tag }} {{ radio.choice_label }}
-                        </label>
-                    {% endfor %}
-                </div>
-                <div style="margin-bottom:1rem;">
-                    <label><strong>Comment (optional)</strong></label><br>
-                    {{ form.comment }}
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    {% if user_rating %}Update rating{% else %}Submit rating{% endif %}
-                </button>
-            </form>
-        </div>
-        {% endif %}
-
-        <!-- Existing ratings -->
-        {% if ratings %}
-        <div class="card" style="margin-top:1rem;">
-            <h3>Reviews</h3>
-            {% for rating in ratings %}
-            <div style="border-bottom:1px solid #eee; padding:0.75rem 0;">
-                <strong>{{ rating.rated_by.username }}</strong>
-                <span style="color:#e63946; margin-left:0.5rem;">
-                    {% for i in "12345" %}
-                        {% if forloop.counter <= rating.score %}★{% else %}☆{% endif %}
-                    {% endfor %}
-                </span>
-                <span style="color:#999; font-size:13px; margin-left:0.5rem;">
-                    {{ rating.created_at|date:"d M Y" }}
-                </span>
-                {% if rating.comment %}
-                <p style="margin:0.4rem 0 0; color:#555;">{{ rating.comment }}</p>
-                {% endif %}
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
+    <!-- Provider info -->
+    <div class="card">
+        <h2>{{ provider.company_name }}</h2>
+        <p><strong>Contact:</strong> {{ provider.contact_person }}</p>
+        <p><strong>Phone:</strong> {{ provider.phone_number }}</p>
+        <p><strong>Service area:</strong> {{ provider.service_area }}</p>
+        <p>
+            <strong>Rating:</strong>
+            {% if provider.average_rating %}
+                {{ provider.average_rating }} / 5
+                <span style="color:#999; font-size:13px;">({{ provider.rating_count }} review{{ provider.rating_count|pluralize }})</span>
+            {% else %}
+                <span style="color:#999;">No ratings yet</span>
+            {% endif %}
+        </p>
+        <a href="{% url 'providers:list' %}" class="btn btn-secondary">Back to Providers</a>
     </div>
-</body>
-</html>
+
+    <!-- Rating form -->
+    {% if request.user.is_authenticated %}
+    <div class="card" style="margin-top:1rem;">
+        <h3>{% if user_rating %}Update your rating{% else %}Leave a rating{% endif %}</h3>
+        <form method="post">
+            {% csrf_token %}
+            <div style="margin-bottom:1rem;">
+                <label><strong>Rating</strong></label><br>
+                {% for radio in form.score %}
+                    <label style="margin-right:1rem; cursor:pointer;">
+                        {{ radio.tag }} {{ radio.choice_label }}
+                    </label>
+                {% endfor %}
+            </div>
+            <div style="margin-bottom:1rem;">
+                <label><strong>Comment (optional)</strong></label><br>
+                {{ form.comment }}
+            </div>
+            <button type="submit" class="btn btn-primary">
+                {% if user_rating %}Update rating{% else %}Submit rating{% endif %}
+            </button>
+        </form>
+    </div>
+    {% endif %}
+
+    <!-- Existing ratings -->
+    {% if ratings %}
+    <div class="card" style="margin-top:1rem;">
+        <h3>Reviews</h3>
+        {% for rating in ratings %}
+        <div style="border-bottom:1px solid #eee; padding:0.75rem 0;">
+            <strong>{{ rating.rated_by.username }}</strong>
+            <span style="color:#e63946; margin-left:0.5rem;">
+                {% for i in "12345" %}
+                    {% if forloop.counter <= rating.score %}★{% else %}☆{% endif %}
+                {% endfor %}
+            </span>
+            <span style="color:#999; font-size:13px; margin-left:0.5rem;">
+                {{ rating.created_at|date:"d M Y" }}
+            </span>
+            {% if rating.comment %}
+            <p style="margin:0.4rem 0 0; color:#555;">{{ rating.comment }}</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+{% endblock %}

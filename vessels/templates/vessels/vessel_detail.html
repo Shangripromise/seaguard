@@ -1,27 +1,34 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>SeaGuard - Vessel Detail</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <nav>
-        <h1>SEAGUARD</h1>
-        <div>
-            <span style="color:#ccc; font-size:14px;">{{ request.user.username }}</span>
-            <a href="{% url 'logout' %}">Logout</a>
-        </div>
-    </nav>
-    <div class="container">
-        <div class="card">
-            <h2>{{ vessel.name }}</h2>
-            <p><strong>Type:</strong> {{ vessel.vessel_type }}</p>
-            <p><strong>Registration:</strong> {{ vessel.registration_number }}</p>
-            <p><strong>Description:</strong> {{ vessel.description }}</p>
-            <a href="{% url 'vessels:vessel_delete' vessel.pk %}" class="btn btn-danger">Delete Vessel</a>
-            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
-        </div>
+{% extends "base.html" %}
+{% block title %}SeaGuard - My Vessels{% endblock %}
+{% block content %}
+    <div class="card">
+        <h2>My Vessels</h2>
+        <a href="{% url 'vessels:vessel_add' %}" class="btn btn-primary" style="margin-bottom:15px;">+ Add Vessel</a>
+        {% if vessels %}
+        <table>
+            <tr>
+                <th>Vessel Name</th>
+                <th>Type</th>
+                <th>Registration</th>
+                <th>Actions</th>
+            </tr>
+            {% for vessel in vessels %}
+            <tr>
+                <td>{{ vessel.name }}</td>
+                <td>{{ vessel.vessel_type }}</td>
+                <td>{{ vessel.registration_number }}</td>
+                <td>
+                    <a href="{% url 'vessels:vessel_detail' vessel.pk %}" class="btn btn-secondary">View</a>
+                    <a href="{% url 'vessels:vessel_delete' vessel.pk %}" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+            <p>No vessels registered yet.</p>
+        {% endif %}
     </div>
-</body>
-</html>
+    <div style="margin-top:16px;">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">← Back to Dashboard</a>
+    </div>
+{% endblock %}

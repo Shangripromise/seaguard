@@ -1,56 +1,45 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>SeaGuard - Provider Directory</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <nav>
-        <h1>SEAGUARD</h1>
-        <div>
-            <a href="{% url 'providers:register' %}">Join as Provider</a>
-            <a href="{% url 'logout' %}">Logout</a>
+{% extends "base.html" %}
+{% block title %}SeaGuard - Provider Directory{% endblock %}
+{% block content %}
+    <div class="card">
+        <h2>Recovery Provider Directory</h2>
+        <p>Verified marine recovery specialists in the SeaGuard network</p>
+        <div style="margin-bottom:16px;">
+            <a href="{% url 'providers:search' %}" class="btn btn-primary">Search Providers</a>
+            <a href="{% url 'providers:register' %}" class="btn btn-secondary">Join as Provider</a>
         </div>
-    </nav>
-    <div class="container">
-        <div class="card">
-            <h2>Recovery Provider Directory</h2>
-            <p>Verified marine recovery specialists in the SeaGuard network</p>
-            {% if providers %}
-                <table>
-                    <tr>
-                        <th>Company</th>
-                        <th>Contact</th>
-                        <th>Phone</th>
-                        <th>Service Area</th>
-                        <th>Rating</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                    {% for provider in providers %}
-                    <tr>
-                        <td>{{ provider.company_name }}</td>
-                        <td>{{ provider.contact_person }}</td>
-                        <td>{{ provider.phone_number }}</td>
-                        <td>{{ provider.service_area }}</td>
-                        <td>
-                            {% if provider.average_rating %}
-                                <span style="color:#e63946;">★</span> {{ provider.average_rating }}
-                                <span style="color:#999; font-size:12px;">({{ provider.rating_count }})</span>
-                            {% else %}
-                                <span style="color:#999; font-size:12px;">No ratings</span>
-                            {% endif %}
-                        </td>
-                        <td><span class="badge badge-approved">Verified</span></td>
-                        <td><a href="{% url 'providers:detail' provider.pk %}" class="btn btn-secondary">View</a></td>
-                    </tr>
-                    {% endfor %}
-                </table>
-            {% else %}
-                <p>No verified providers listed yet.</p>
-            {% endif %}
-        </div>
+        {% if providers %}
+        <table>
+            <tr>
+                <th>Company</th>
+                <th>Contact</th>
+                <th>Phone</th>
+                <th>Service Area</th>
+                <th>Rating</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            {% for provider in providers %}
+            <tr>
+                <td>{{ provider.company_name }}</td>
+                <td>{{ provider.contact_person }}</td>
+                <td>{{ provider.phone_number }}</td>
+                <td>{{ provider.service_area }}</td>
+                <td>
+                    {% if provider.average_rating %}
+                        <span style="color:#e63946;">★</span> {{ provider.average_rating }}
+                        <span style="color:#999; font-size:12px;">({{ provider.rating_count }})</span>
+                    {% else %}
+                        <span style="color:#999; font-size:12px;">No ratings</span>
+                    {% endif %}
+                </td>
+                <td><span class="badge badge-approved">Verified</span></td>
+                <td><a href="{% url 'providers:detail' provider.pk %}" class="btn btn-secondary">View</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+            <p>No verified providers listed yet.</p>
+        {% endif %}
     </div>
-</body>
-</html>
+{% endblock %}

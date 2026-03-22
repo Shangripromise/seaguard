@@ -1,35 +1,13 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>SeaGuard - Add Vessel</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <nav>
-        <h1>SEAGUARD</h1>
-        <div>
-            <span style="color:#ccc; font-size:14px;">{{ request.user.username }}</span>
-            <a href="{% url 'logout' %}">Logout</a>
-        </div>
-    </nav>
-    <div class="container">
-        <div class="card">
-            <h2>Add Vessel</h2>
-            {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="message">{{ message }}</div>
-                {% endfor %}
-            </div>
-            {% endif %}
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary">Add Vessel</button>
-                <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
-            </form>
-        </div>
+{% extends "base.html" %}
+{% block title %}SeaGuard - Add Vessel{% endblock %}
+{% block content %}
+    <div class="card">
+        <h2>Add Vessel</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Add Vessel</button>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+        </form>
     </div>
-</body>
-</html>
+{% endblock %}

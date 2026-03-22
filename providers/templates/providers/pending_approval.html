@@ -1,27 +1,16 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>SeaGuard - Application Pending</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <nav>
-        <h1>SEAGUARD</h1>
-    </nav>
-    <div class="container">
-        <div class="card">
-            <h2>Application Under Review</h2>
-            <p>Thank you for registering <strong>{{ provider.company_name }}</strong> with SeaGuard.</p>
-            <p>Our team is currently verifying your business details. This typically takes 1-2 business days.</p>
-            <h3>Your Submission</h3>
-            <p><strong>Company:</strong> {{ provider.company_name }}</p>
-            <p><strong>Contact:</strong> {{ provider.contact_person }}</p>
-            <p><strong>Phone:</strong> {{ provider.phone_number }}</p>
-            <p><strong>Registration No:</strong> {{ provider.business_registration }}</p>
-            <p><strong>Service Area:</strong> {{ provider.service_area }}</p>
-            <a href="{% url 'logout' %}" class="btn btn-secondary">Sign Out</a>
-        </div>
+{% extends "base.html" %}
+{% block title %}SeaGuard - Application Pending{% endblock %}
+{% block content %}
+    <div class="card">
+        <h2>Application Under Review</h2>
+        <p>Thank you for registering <strong>{{ provider.company_name }}</strong> with SeaGuard.</p>
+        <p>Our team is currently verifying your business details. This typically takes 1–2 business days.</p>
+        <h3>Your Submission</h3>
+        <p><strong>Company:</strong> {{ provider.company_name }}</p>
+        <p><strong>Contact:</strong> {{ provider.contact_person }}</p>
+        <p><strong>Phone:</strong> {{ provider.phone_number }}</p>
+        <p><strong>Registration No:</strong> {{ provider.business_registration }}</p>
+        <p><strong>Service Area:</strong> {{ provider.service_area }}</p>
+        <a href="{% url 'logout' %}" class="btn btn-secondary">Sign Out</a>
     </div>
-</body>
-</html>
+{% endblock %}

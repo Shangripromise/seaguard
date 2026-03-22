@@ -1,38 +1,22 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>SeaGuard - Provider Dashboard</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <nav>
-        <h1>SEAGUARD</h1>
-        <div>
-            <span style="color:#ccc; font-size:14px;">PROVIDER</span>
-            <a href="{% url 'logout' %}">Logout</a>
-        </div>
-    </nav>
-    <div class="container">
+{% extends "base.html" %}
+{% block title %}SeaGuard - Provider Dashboard{% endblock %}
+{% block content %}
 
-        <div class="card">
-            <h2>{{ provider.company_name }}</h2>
-            <span class="badge badge-approved">Verified Provider</span>
-            <h3 style="margin-top:15px;">Business Details</h3>
-            <p><strong>Contact:</strong> {{ provider.contact_person }}</p>
-            <p><strong>Phone:</strong> {{ provider.phone_number }}</p>
-            <p><strong>Registration No:</strong> {{ provider.business_registration }}</p>
-            <p><strong>Service Area:</strong> {{ provider.service_area }}</p>
-            <p><strong>Email:</strong> {{ provider.user.email }}</p>
-        </div>
-
-        <div class="card">
-            <h2>Quick Links</h2>
-            <a href="{% url 'emergencies:emergency_list' %}" class="btn btn-danger">View Active Emergencies</a>
-            <a href="{% url 'providers:list' %}" class="btn btn-primary">Provider Directory</a>
-            <a href="{% url 'logout' %}" class="btn btn-secondary">Logout</a>
-        </div>
-
+    <div class="card">
+        <h2>{{ provider.company_name }}</h2>
+        <span class="badge badge-approved">Verified Provider</span>
+        <h3 style="margin-top:15px;">Business Details</h3>
+        <p><strong>Contact:</strong> {{ provider.contact_person }}</p>
+        <p><strong>Phone:</strong> {{ provider.phone_number }}</p>
+        <p><strong>Registration No:</strong> {{ provider.business_registration }}</p>
+        <p><strong>Service Area:</strong> {{ provider.service_area }}</p>
+        <p><strong>Email:</strong> {{ provider.user.email }}</p>
     </div>
-</body>
-</html>
+
+    <div class="card">
+        <h2>Quick Links</h2>
+        <a href="{% url 'emergencies:emergency_list' %}" class="btn btn-danger">View Active Emergencies</a>
+        <a href="{% url 'providers:list' %}" class="btn btn-primary">Provider Directory</a>
+    </div>
+
+{% endblock %}
