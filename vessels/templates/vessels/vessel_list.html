@@ -1,16 +1,33 @@
 {% extends "base.html" %}
-{% block title %}SeaGuard - Application Pending{% endblock %}
+{% block title %}My Vessels{% endblock %}
 {% block content %}
-    <div class="card">
-        <h2>Application Under Review</h2>
-        <p>Thank you for registering <strong>{{ provider.company_name }}</strong> with SeaGuard.</p>
-        <p>Our team is currently verifying your business details. This typically takes 1–2 business days.</p>
-        <h3>Your Submission</h3>
-        <p><strong>Company:</strong> {{ provider.company_name }}</p>
-        <p><strong>Contact:</strong> {{ provider.contact_person }}</p>
-        <p><strong>Phone:</strong> {{ provider.phone_number }}</p>
-        <p><strong>Registration No:</strong> {{ provider.business_registration }}</p>
-        <p><strong>Service Area:</strong> {{ provider.service_area }}</p>
-        <a href="{% url 'logout' %}" class="btn btn-secondary">Sign Out</a>
+<div class="card">
+    <div class="page-header">
+        <h2>My Vessels</h2>
+        <a href="{% url 'vessels:vessel_add' %}" class="btn btn-primary">+ Add Vessel</a>
     </div>
+    {% if vessels %}
+    <table>
+        <tr>
+            <th>Vessel Name</th>
+            <th>Type</th>
+            <th>IMO Number</th>
+            <th>Actions</th>
+        </tr>
+        {% for vessel in vessels %}
+        <tr>
+            <td>{{ vessel.name }}</td>
+            <td>{{ vessel.get_vessel_type_display }}</td>
+            <td>{{ vessel.imo_number }}</td>
+            <td>
+                <a href="{% url 'vessels:vessel_detail' vessel.pk %}" class="btn btn-secondary btn-sm">View</a>
+                <a href="{% url 'vessels:vessel_delete' vessel.pk %}" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No vessels registered yet. <a href="{% url 'vessels:vessel_add' %}">Add your first vessel</a>.</p>
+    {% endif %}
+</div>
 {% endblock %}

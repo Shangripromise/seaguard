@@ -1,34 +1,113 @@
 {% extends "base.html" %}
-{% block title %}SeaGuard - My Vessels{% endblock %}
+{% block title %}{{ vessel.name }}{% endblock %}
 {% block content %}
-    <div class="card">
-        <h2>My Vessels</h2>
-        <a href="{% url 'vessels:vessel_add' %}" class="btn btn-primary" style="margin-bottom:15px;">+ Add Vessel</a>
-        {% if vessels %}
-        <table>
-            <tr>
-                <th>Vessel Name</th>
-                <th>Type</th>
-                <th>Registration</th>
-                <th>Actions</th>
-            </tr>
-            {% for vessel in vessels %}
-            <tr>
-                <td>{{ vessel.name }}</td>
-                <td>{{ vessel.vessel_type }}</td>
-                <td>{{ vessel.registration_number }}</td>
-                <td>
-                    <a href="{% url 'vessels:vessel_detail' vessel.pk %}" class="btn btn-secondary">View</a>
-                    <a href="{% url 'vessels:vessel_delete' vessel.pk %}" class="btn btn-danger">Delete</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-        {% else %}
-            <p>No vessels registered yet.</p>
-        {% endif %}
+
+<div class="card">
+    <div class="page-header">
+        <h2>{{ vessel.name }}</h2>
+        <div>
+            <a href="{% url 'vessels:vessel_delete' vessel.pk %}" class="btn btn-danger btn-sm">Delete Vessel</a>
+            <a href="{% url 'vessels:vessel_list' %}" class="btn btn-secondary btn-sm">Back to My Vessels</a>
+        </div>
     </div>
-    <div style="margin-top:16px;">
-        <a href="{% url 'dashboard' %}" class="btn btn-secondary">← Back to Dashboard</a>
+    <p><strong>Type:</strong> {{ vessel.get_vessel_type_display }}</p>
+    <p><strong>IMO Number:</strong> {{ vessel.imo_number }}</p>
+    <p><strong>Flag:</strong> {{ vessel.flag }}</p>
+    {% if vessel.call_sign %}<p><strong>Call Sign:</strong> {{ vessel.call_sign }}</p>{% endif %}
+    {% if vessel.mmsi %}<p><strong>MMSI:</strong> {{ vessel.mmsi }}</p>{% endif %}
+    {% if vessel.ssr_number %}<p><strong>SSR Number:</strong> {{ vessel.ssr_number }}</p>{% endif %}
+    {% if vessel.description %}<p><strong>Description:</strong> {{ vessel.description }}</p>{% endif %}
+</div>
+
+<!-- Documents -->
+<div class="card">
+    <div class="page-header">
+        <h3>Documents</h3>
+        <a href="{% url 'vessels:document_upload' vessel.pk %}" class="btn btn-primary btn-sm">+ Upload Document</a>
     </div>
+    {% if documents %}
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Expiry</th>
+            <th>Actions</th>
+        </tr>
+        {% for doc in documents %}
+        <tr>
+            <td>{{ doc.title }}</td>
+            <td>{{ doc.get_document_type_display }}</td>
+            <td>{% if doc.expiry_date %}{{ doc.expiry_date }}{% else %}-{% endif %}</td>
+            <td>
+                <a href="{{ doc.file.url }}" class="btn btn-secondary btn-sm" target="_blank">View</a>
+                <a href="{% url 'vessels:document_delete' doc.pk %}" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No documents uploaded yet.</p>
+    {% endif %}
+</div>
+
+<!-- Maintenance Requests -->
+<div class="card">
+    <div class="page-header">
+        <h3>Maintenance Requests</h3>
+        <a href="{% url 'vessels:maintenance_request' vessel.pk %}" class="btn btn-primary btn-sm">+ New Request</a>
+    </div>
+    {% if maintenance_requests %}
+    <table>
+        <tr>
+            <th>Type</th>
+            <th>Requested Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        {% for req in maintenance_requests %}
+        <tr>
+            <td>{{ req.get_check_type_display }}</td>
+            <td>{{ req.requested_date }}</td>
+            <td><span class="badge badge-info">{{ req.get_status_display }}</span></td>
+            <td><a href="{% url 'vessels:maintenance_detail' req.pk %}" class="btn btn-secondary btn-sm">View</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No maintenance requests yet.</p>
+    {% endif %}
+</div>
+
+<!-- Passage Plans -->
+<div class="card">
+    <div class="page-header">
+        <h3>Passage Plans</h3>
+        <a href="{% url 'vessels:passage_plan_create' vessel.pk %}" class="btn btn-primary btn-sm">+ New Plan</a>
+    </div>
+    {% if passage_plans %}
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Departure</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        {% for plan in passage_plans %}
+        <tr>
+            <td>{{ plan.title }}</td>
+            <td>{{ plan.departure_port }}</td>
+            <td>{{ plan.destination_port }}</td>
+            <td>{{ plan.departure_datetime|date:"d M Y H:i" }}</td>
+            <td><span class="badge badge-info">{{ plan.get_status_display }}</span></td>
+            <td><a href="{% url 'vessels:passage_plan_detail' plan.pk %}" class="btn btn-secondary btn-sm">View</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No passage plans yet.</p>
+    {% endif %}
+</div>
+
 {% endblock %}

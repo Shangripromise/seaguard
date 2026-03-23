@@ -3,13 +3,19 @@
 <html>
 <head>
     <title>{% block title %}SeaGuard{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=4">
 </head>
 <body>
     <nav>
-        <a href="/" style="text-decoration:none; color:white;"><h1>SEAGUARD</h1></a>
+        <div class="nav-brand">
+            <a href="/" style="text-decoration:none; color:white;"><h1>SEAGUARD</h1></a>
+            {% if user.is_authenticated %}
+                <span class="nav-user">Logged in as: <strong>{{ request.user.username }}</strong></span>
+            {% endif %}
+        </div>
         <div class="nav-links">
             {% if user.is_authenticated %}
+                <a href="{% url 'emergencies:emergency_submit' %}" style="background:#c0392b;color:#fff;font-weight:700;padding:7px 14px;border-radius:5px;text-decoration:none;font-size:14px;border:2px solid #e74c3c;">SOS Request Recovery</a>
                 <a href="{% url 'vessels:vessel_list' %}">My Vessels</a>
                 <a href="{% url 'emergencies:emergency_list' %}">Emergencies</a>
                 <a href="{% url 'providers:search' %}">Find Providers</a>
@@ -21,7 +27,6 @@
                     <a href="{% url 'providers:admin_rating_moderation' %}">Ratings</a>
                     <a href="{% url 'providers:admin_review' %}">Approvals</a>
                 {% endif %}
-                <span style="color:#ccc; font-size:14px;">{{ request.user.username }}</span>
                 <a href="{% url 'logout' %}">Logout</a>
             {% else %}
                 <a href="{% url 'login' %}">Login</a>
@@ -29,7 +34,6 @@
             {% endif %}
         </div>
     </nav>
-
     <div class="container">
         {% if messages %}
         <div class="messages">
@@ -38,7 +42,6 @@
             {% endfor %}
         </div>
         {% endif %}
-
         {% block content %}{% endblock %}
     </div>
 </body>

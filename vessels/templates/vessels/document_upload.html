@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Upload Document - {{ vessel.name }}{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="page-header">
+        <h2>Upload Document — {{ vessel.name }}</h2>
+        <a href="{% url 'vessels:vessel_detail' vessel.pk %}" class="btn btn-secondary">Back to Vessel</a>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label>{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<p style="color:red;">{{ field.errors }}</p>{% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Upload Document</button>
+    </form>
+</div>
+{% endblock %}

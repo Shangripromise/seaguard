@@ -1,0 +1,218 @@
+/* -- Reset & Base ----------------------------------------------- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f0f4f8;
+    color: #222;
+}
+
+/* -- Nav -------------------------------------------------------- */
+nav {
+    background: #0a1628;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 64px;
+    gap: 16px;
+}
+
+.nav-brand {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+.nav-brand h1 {
+    color: floralwhite;
+    font-size: 22px;
+    letter-spacing: 3px;
+    font-weight: 800;
+    margin: 0;
+}
+
+.nav-user {
+    color: #ffffff;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.nav-user strong {
+    color: #ffffff;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.nav-links a {
+    color: #ccddf0;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.nav-links a:hover {
+    background: #1a3050;
+    color: #fff;
+}
+
+/* -- Container -------------------------------------------------- */
+.container {
+    max-width: 1100px;
+    margin: 32px auto;
+    padding: 0 20px;
+}
+
+/* -- Cards ------------------------------------------------------ */
+.card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+/* -- Buttons ---------------------------------------------------- */
+.btn {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.2s;
+}
+
+.btn:hover { opacity: 0.85; }
+
+.btn-primary   { background: #0a6ebd; color: #fff; }
+.btn-success   { background: #1a8a4a; color: #fff; }
+.btn-danger    { background: #c0392b; color: #fff; }
+.btn-secondary { background: #6c757d; color: #fff; }
+.btn-warning   { background: #e67e22; color: #fff; }
+.btn-sm        { padding: 5px 12px; font-size: 13px; }
+
+/* -- Forms ------------------------------------------------------ */
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #333;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    background: #fafafa;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #0a6ebd;
+    background: #fff;
+}
+
+/* -- Messages --------------------------------------------------- */
+.messages { margin-bottom: 20px; }
+
+.message {
+    padding: 12px 16px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.message.error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.message.warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+.message.info    { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+/* -- Tables ----------------------------------------------------- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+th {
+    background: #0a1628;
+    color: #fff;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #e5e9f0;
+}
+
+tr:hover td { background: #f5f8ff; }
+
+/* -- Badges ----------------------------------------------------- */
+.badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-success  { background: #d4edda; color: #155724; }
+.badge-danger   { background: #f8d7da; color: #721c24; }
+.badge-warning  { background: #fff3cd; color: #856404; }
+.badge-info     { background: #d1ecf1; color: #0c5460; }
+.badge-secondary{ background: #e2e6ea; color: #383d41; }
+
+/* -- Page headings ---------------------------------------------- */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.page-header h2 { font-size: 24px; color: #0a1628; }
+Add-Content static/css/style.css @"
+
+/* ── Emergency Button ─────────────────────────────────────────── */
+.btn-emergency {
+    background: #c0392b;
+    color: #fff !important;
+    font-weight: 700;
+    padding: 7px 14px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    border: 2px solid #e74c3c;
+    transition: background 0.2s;
+}
+
+.btn-emergency:hover {
+    background: #e74c3c !important;
+    color: #fff !important;
+}

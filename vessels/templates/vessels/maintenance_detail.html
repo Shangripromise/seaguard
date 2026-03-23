@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Maintenance Request{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="page-header">
+        <h2>{{ req.get_check_type_display }}</h2>
+        <a href="{% url 'vessels:vessel_detail' req.vessel.pk %}" class="btn btn-secondary">Back to Vessel</a>
+    </div>
+    <p><strong>Vessel:</strong> {{ req.vessel.name }}</p>
+    <p><strong>Status:</strong> <span class="badge badge-info">{{ req.get_status_display }}</span></p>
+    <p><strong>Description:</strong> {{ req.description }}</p>
+    <p><strong>Requested by:</strong> {{ req.requested_date }}</p>
+    {% if req.assigned_contractor %}
+    <p><strong>Assigned Contractor:</strong> {{ req.assigned_contractor }}</p>
+    {% endif %}
+    {% if req.contractor_notes %}
+    <p><strong>Contractor Notes:</strong> {{ req.contractor_notes }}</p>
+    {% endif %}
+</div>
+{% endblock %}

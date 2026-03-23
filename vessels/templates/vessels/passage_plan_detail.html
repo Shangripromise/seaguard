@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Passage Plan - {{ plan.title }}{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="page-header">
+        <h2>{{ plan.title }}</h2>
+        <div>
+            <a href="{% url 'vessels:passage_plan_edit' plan.pk %}" class="btn btn-warning">Edit</a>
+            <a href="{% url 'vessels:passage_plan_delete' plan.pk %}" class="btn btn-danger">Delete</a>
+            <a href="{% url 'vessels:vessel_detail' plan.vessel.pk %}" class="btn btn-secondary">Back to Vessel</a>
+        </div>
+    </div>
+    <p><strong>From:</strong> {{ plan.departure_port }} &rarr; <strong>To:</strong> {{ plan.destination_port }}</p>
+    <p><strong>Departure:</strong> {{ plan.departure_datetime }}</p>
+    <p><strong>Status:</strong> <span class="badge badge-info">{{ plan.get_status_display }}</span></p>
+    <p><strong>Persons on Board:</strong> {{ plan.persons_on_board }}</p>
+    {% if plan.route_description %}<p><strong>Route:</strong> {{ plan.route_description }}</p>{% endif %}
+    {% if plan.hazards %}<p><strong>Hazards:</strong> {{ plan.hazards }}</p>{% endif %}
+    {% if plan.crew_list %}<p><strong>Crew:</strong> {{ plan.crew_list }}</p>{% endif %}
+    {% if plan.weather_forecast %}<p><strong>Weather:</strong> {{ plan.weather_forecast }}</p>{% endif %}
+    <h3 style="margin-top:16px;">Pre-Departure Checks</h3>
+    <p>Bilge: {% if plan.check_bilge %}Yes{% else %}No{% endif %} |
+    Engine Bilge: {% if plan.check_engine_bilge %}Yes{% else %}No{% endif %} |
+    Oil: {% if plan.check_oil_level %}Yes{% else %}No{% endif %} |
+    Coolant: {% if plan.check_coolant %}Yes{% else %}No{% endif %}</p>
+    {% if plan.fuel_level_pct %}<p><strong>Fuel:</strong> {{ plan.fuel_level_pct }}%</p>{% endif %}
+</div>
+{% endblock %}
