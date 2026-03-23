@@ -3,7 +3,7 @@
 {% block content %}
 <div class="card">
     <div class="page-header">
-        <h2>Upload Document — {{ vessel.name }}</h2>
+        <h2>Upload Document - {{ vessel.name }}</h2>
         <a href="{% url 'vessels:vessel_detail' vessel.pk %}" class="btn btn-secondary">Back to Vessel</a>
     </div>
     <form method="post" enctype="multipart/form-data">

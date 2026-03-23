@@ -1,4 +1,8 @@
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -15,6 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages',
     'accounts',
     'vessels',
     'emergencies',
@@ -73,9 +78,28 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-# Media files (uploads)
-import os
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Cloudflare R2 Storage
+STORAGES = {
+    'default': {
+        'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
+        'OPTIONS': {
+            'access_key': os.getenv('R2_ACCESS_KEY_ID'),
+            'secret_key': os.getenv('R2_SECRET_ACCESS_KEY'),
+            'bucket_name': os.getenv('R2_BUCKET_NAME'),
+            'endpoint_url': os.getenv('R2_ENDPOINT_URL'),
+            'region_name': 'auto',
+            'default_acl': None,
+            'querystring_auth': True,
+            'file_overwrite': False,
+        },
+    },
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+    },
+}
