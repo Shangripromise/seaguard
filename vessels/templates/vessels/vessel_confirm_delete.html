@@ -3,7 +3,7 @@
 {% block content %}
 <div class="card">
     <h2>Delete Vessel</h2>
-    <p>Are you sure you want to delete <strong>{{ vessel.name }}</strong>? This will also delete all associated documents, maintenance requests and passage plans.</p>
+    <p>Are you sure you want to delete <strong>{{ vessel.name }}</strong>? This will also delete all documents, maintenance requests and passage plans.</p>
     <form method="post">
         {% csrf_token %}
         <button type="submit" class="btn btn-danger">Yes, Delete</button>

@@ -9,7 +9,7 @@
     <p><strong>Vessel:</strong> {{ req.vessel.name }}</p>
     <p><strong>Status:</strong> <span class="badge badge-info">{{ req.get_status_display }}</span></p>
     <p><strong>Description:</strong> {{ req.description }}</p>
-    <p><strong>Requested by:</strong> {{ req.requested_date }}</p>
+    <p><strong>Requested Date:</strong> {{ req.requested_date }}</p>
     {% if req.assigned_contractor %}
     <p><strong>Assigned Contractor:</strong> {{ req.assigned_contractor }}</p>
     {% endif %}

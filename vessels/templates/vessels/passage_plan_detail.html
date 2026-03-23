@@ -10,7 +10,7 @@
             <a href="{% url 'vessels:vessel_detail' plan.vessel.pk %}" class="btn btn-secondary">Back to Vessel</a>
         </div>
     </div>
-    <p><strong>From:</strong> {{ plan.departure_port }} &rarr; <strong>To:</strong> {{ plan.destination_port }}</p>
+    <p><strong>From:</strong> {{ plan.departure_port }} to <strong>{{ plan.destination_port }}</strong></p>
     <p><strong>Departure:</strong> {{ plan.departure_datetime }}</p>
     <p><strong>Status:</strong> <span class="badge badge-info">{{ plan.get_status_display }}</span></p>
     <p><strong>Persons on Board:</strong> {{ plan.persons_on_board }}</p>
@@ -19,10 +19,14 @@
     {% if plan.crew_list %}<p><strong>Crew:</strong> {{ plan.crew_list }}</p>{% endif %}
     {% if plan.weather_forecast %}<p><strong>Weather:</strong> {{ plan.weather_forecast }}</p>{% endif %}
     <h3 style="margin-top:16px;">Pre-Departure Checks</h3>
-    <p>Bilge: {% if plan.check_bilge %}Yes{% else %}No{% endif %} |
-    Engine Bilge: {% if plan.check_engine_bilge %}Yes{% else %}No{% endif %} |
-    Oil: {% if plan.check_oil_level %}Yes{% else %}No{% endif %} |
-    Coolant: {% if plan.check_coolant %}Yes{% else %}No{% endif %}</p>
+    <p>
+        Bilge: {% if plan.check_bilge %}Yes{% else %}No{% endif %} |
+        Engine Bilge: {% if plan.check_engine_bilge %}Yes{% else %}No{% endif %} |
+        Oil: {% if plan.check_oil_level %}Yes{% else %}No{% endif %} |
+        Coolant: {% if plan.check_coolant %}Yes{% else %}No{% endif %}
+    </p>
     {% if plan.fuel_level_pct %}<p><strong>Fuel:</strong> {{ plan.fuel_level_pct }}%</p>{% endif %}
+    {% if plan.engine_battery_v %}<p><strong>Engine Battery:</strong> {{ plan.engine_battery_v }}V</p>{% endif %}
+    {% if plan.service_battery_v %}<p><strong>Service Battery:</strong> {{ plan.service_battery_v }}V</p>{% endif %}
 </div>
 {% endblock %}
