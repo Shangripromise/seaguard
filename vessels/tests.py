@@ -102,7 +102,7 @@ class VesselViewTest(TestCase):
 
     def test_vessel_list_loads(self):
         """Vessel list page returns 200 for authenticated user"""
-        response = self.client.get(reverse('vessel_list'))
+        response = self.client.get(reverse('vessels:vessel_list'))
         self.assertEqual(response.status_code, 200)
 
     def test_vessel_list_shows_own_vessels_only(self):
@@ -114,18 +114,18 @@ class VesselViewTest(TestCase):
             vessel_type='fishing',
             flag='France',
         )
-        response = self.client.get(reverse('vessel_list'))
+        response = self.client.get(reverse('vessels:vessel_list'))
         self.assertContains(response, 'MV Ambition')
         self.assertNotContains(response, 'Other Vessel')
 
     def test_add_vessel_get(self):
         """Add vessel page loads for authenticated user"""
-        response = self.client.get(reverse('vessel_add'))
+        response = self.client.get(reverse('vessels:vessel_add'))
         self.assertEqual(response.status_code, 200)
 
     def test_add_vessel_post_valid(self):
         """Valid vessel form creates a new vessel"""
-        response = self.client.post(reverse('vessel_add'), {
+        self.client.post(reverse('vessels:vessel_add'), {
             'name': 'New Vessel',
             'imo_number': 'IMO7654321',
             'vessel_type': 'fishing',
@@ -135,17 +135,16 @@ class VesselViewTest(TestCase):
 
     def test_vessel_detail_loads(self):
         """Vessel detail page returns 200"""
-        response = self.client.get(reverse('vessel_detail', args=[self.vessel.pk]))
+        response = self.client.get(reverse('vessels:vessel_detail', args=[self.vessel.pk]))
         self.assertEqual(response.status_code, 200)
 
     def test_vessel_detail_other_user_blocked(self):
         """User cannot view another user's vessel detail"""
         self.client.login(username='other', password='SecurePass123!')
-        response = self.client.get(reverse('vessel_detail', args=[self.vessel.pk]))
+        response = self.client.get(reverse('vessels:vessel_detail', args=[self.vessel.pk]))
         self.assertEqual(response.status_code, 404)
 
     def test_delete_vessel(self):
         """Vessel can be deleted by its owner"""
-        self.client.post(reverse('vessel_delete', args=[self.vessel.pk]))
+        self.client.post(reverse('vessels:vessel_delete', args=[self.vessel.pk]))
         self.assertFalse(Vessel.objects.filter(pk=self.vessel.pk).exists())
-        

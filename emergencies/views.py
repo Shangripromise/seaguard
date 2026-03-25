@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
+from django.http import Http404
 from django.utils import timezone
 
 from .models import EmergencyRequest, StatusUpdate
@@ -82,6 +83,9 @@ def emergency_submit(request):
 @login_required
 def emergency_detail(request, pk):
     emergency = get_object_or_404(EmergencyRequest, pk=pk)
+    # Ownership check — staff can see all, users can only see their own
+    if not request.user.is_staff and emergency.submitted_by != request.user:
+        raise Http404
     status_updates = emergency.status_updates.all()
     allowed = emergency.allowed_transitions(request.user)
     return render(request, 'emergencies/emergency_detail.html', {

@@ -112,11 +112,11 @@ class UnauthenticatedAccessTest(TestCase):
         )
 
     def test_vessel_list_requires_login(self):
-        response = self.client.get(reverse('vessel_list'))
+        response = self.client.get(reverse('vessels:vessel_list'))
         self.assertEqual(response.status_code, 302)
 
     def test_emergency_list_requires_login(self):
-        response = self.client.get(reverse('emergency_list'))
+        response = self.client.get(reverse('emergencies:emergency_list'))
         self.assertEqual(response.status_code, 302)
 
     def test_admin_dashboard_requires_staff(self):
