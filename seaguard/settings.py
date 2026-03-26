@@ -103,3 +103,5 @@ STORAGES = {
         'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
     },
 }
+# Password reset — use console backend for development (prints email to terminal)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
