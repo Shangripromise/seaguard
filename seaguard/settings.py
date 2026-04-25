@@ -6,7 +6,7 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-1p68=uv0b#v@p_fi@1(rqwb4qsg_^qz9y9o$aenf^1$w8x!h13'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = True
 
@@ -103,5 +103,5 @@ STORAGES = {
         'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
     },
 }
-# Password reset — use console backend for development (prints email to terminal)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Password reset — use console backend for development (prints email
