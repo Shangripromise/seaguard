@@ -75,11 +75,13 @@
     </div>
 
     <!-- CR3 — Member Discounts link, dashboard only per FR-VO-DISC-002 -->
-    <div style="margin-top:16px;">
+  <div style="margin-top:16px;">
         <a href="{% url 'member_discounts' %}" class="btn btn-secondary">Member Discounts</a>
         {% if user.is_staff %}
             <a href="{% url 'admin_dashboard' %}" class="btn btn-primary" style="margin-left:8px;">Admin Dashboard</a>
         {% endif %}
+        {% if not user.provider_profile %}
+            <a href="{% url 'providers:register' %}" class="btn btn-secondary" style="margin-left:8px;">Join as Recovery Provider</a>
+        {% endif %}
     </div>
-
 {% endblock %}

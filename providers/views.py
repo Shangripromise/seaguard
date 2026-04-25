@@ -7,7 +7,11 @@ from django.db.models import Q
 from django.http import Http404
 from django.utils import timezone
 
-from .forms import RecoveryProviderRegistrationForm, ProviderRatingForm
+from .forms import (
+    RecoveryProviderRegistrationForm,
+    ExistingUserProviderRegistrationForm,
+    ProviderRatingForm,
+)
 from .models import RecoveryProvider, ProviderRating
 
 
@@ -15,23 +19,55 @@ def is_staff(user):
     return user.is_staff
 
 
-# ---------------------------------------------------------------------------
-# Existing views — unchanged logic, preserved exactly
-# ---------------------------------------------------------------------------
-
 def provider_register(request):
-    if request.user.is_authenticated:
+    # Already has a provider profile — go to dashboard
+    if request.user.is_authenticated and hasattr(request.user, 'provider_profile'):
         return redirect('providers:dashboard')
+
+    # Logged-in vessel operator joining as provider
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            form = ExistingUserProviderRegistrationForm(request.POST)
+            if form.is_valid():
+                RecoveryProvider.objects.create(
+                    user=request.user,
+                    company_name=form.cleaned_data['company_name'],
+                    contact_person=form.cleaned_data['contact_person'],
+                    phone_number=form.cleaned_data['phone_number'],
+                    business_registration=form.cleaned_data['business_registration'],
+                    service_area=form.cleaned_data['service_area'],
+                    service_type=form.cleaned_data['service_type'],
+                    verification_status='pending',
+                )
+                messages.success(
+                    request,
+                    'Provider registration submitted! Your account is pending verification.'
+                )
+                return redirect('providers:pending_approval')
+        else:
+            form = ExistingUserProviderRegistrationForm()
+        return render(request, 'providers/register.html', {
+            'form': form,
+            'existing_user': True,
+        })
+
+    # Unauthenticated user — creates new account + provider profile
     if request.method == 'POST':
         form = RecoveryProviderRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, 'Registration submitted! Your account is pending verification.')
+            messages.success(
+                request,
+                'Registration submitted! Your account is pending verification.'
+            )
             return redirect('providers:pending_approval')
     else:
         form = RecoveryProviderRegistrationForm()
-    return render(request, 'providers/register.html', {'form': form})
+    return render(request, 'providers/register.html', {
+        'form': form,
+        'existing_user': False,
+    })
 
 
 def provider_list(request):
@@ -44,7 +80,6 @@ def provider_list(request):
 def provider_detail(request, provider_id):
     provider = get_object_or_404(RecoveryProvider, pk=provider_id,
                                  verification_status='approved')
-    # CR4 — only show approved ratings publicly
     ratings = provider.ratings.filter(
         moderation_status='approved'
     ).select_related('rated_by')
@@ -67,7 +102,6 @@ def provider_detail(request, provider_id):
             rating = form.save(commit=False)
             rating.provider = provider
             rating.rated_by = request.user
-            # CR4 — new/updated ratings go back to pending moderation
             rating.moderation_status = 'pending'
             rating.rejection_reason  = ''
             rating.moderated_by      = None
@@ -151,16 +185,7 @@ def admin_provider_reject(request, provider_id):
     return redirect('providers:admin_review')
 
 
-# ---------------------------------------------------------------------------
-# CR1 — Advanced search / filter on provider directory
-# FR-VO-SEA-001 / FR-VO-SEA-002
-# ---------------------------------------------------------------------------
-
 def provider_search(request):
-    """
-    Keyword search across company_name and service_area,
-    with availability status filter.
-    """
     query        = request.GET.get('q', '').strip()
     availability = request.GET.get('availability', '')
 
@@ -189,16 +214,8 @@ def provider_search(request):
     })
 
 
-# ---------------------------------------------------------------------------
-# CR4 — Admin rating moderation queue
-# FR-SA-MOD-001 / FR-SA-MOD-002 / FR-SA-MOD-003
-# ---------------------------------------------------------------------------
-
 @staff_member_required
 def admin_rating_moderation(request):
-    """
-    FR-SA-MOD-001 — Moderation queue showing all pending ratings.
-    """
     pending  = ProviderRating.objects.filter(
                    moderation_status='pending'
                ).select_related('provider', 'rated_by').order_by('created_at')
@@ -219,9 +236,6 @@ def admin_rating_moderation(request):
 
 @staff_member_required
 def admin_rating_approve(request, rating_id):
-    """
-    FR-SA-MOD-002 — Approve a pending rating; makes it publicly visible.
-    """
     rating = get_object_or_404(ProviderRating, pk=rating_id)
     if request.method == 'POST':
         rating.moderation_status = 'approved'
@@ -239,9 +253,6 @@ def admin_rating_approve(request, rating_id):
 
 @staff_member_required
 def admin_rating_reject(request, rating_id):
-    """
-    FR-SA-MOD-003 — Reject a pending rating with a documented reason.
-    """
     rating = get_object_or_404(ProviderRating, pk=rating_id)
     if request.method == 'POST':
         reason = request.POST.get('rejection_reason', 'other')

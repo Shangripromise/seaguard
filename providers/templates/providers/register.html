@@ -1,34 +1,29 @@
 {% extends "base.html" %}
-{% block title %}SeaGuard - My Vessels{% endblock %}
+{% block title %}SeaGuard - Register as Recovery Provider{% endblock %}
 {% block content %}
-    <div class="card">
-        <h2>My Vessels</h2>
-        <a href="{% url 'vessels:vessel_add' %}" class="btn btn-primary" style="margin-bottom:15px;">+ Add Vessel</a>
-        {% if vessels %}
-        <table>
-            <tr>
-                <th>Vessel Name</th>
-                <th>Type</th>
-                <th>Registration</th>
-                <th>Actions</th>
-            </tr>
-            {% for vessel in vessels %}
-            <tr>
-                <td>{{ vessel.name }}</td>
-                <td>{{ vessel.vessel_type }}</td>
-                <td>{{ vessel.registration_number }}</td>
-                <td>
-                    <a href="{% url 'vessels:vessel_detail' vessel.pk %}" class="btn btn-secondary">View</a>
-                    <a href="{% url 'vessels:vessel_delete' vessel.pk %}" class="btn btn-danger">Delete</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-        {% else %}
-            <p>No vessels registered yet.</p>
-        {% endif %}
-    </div>
-    <div style="margin-top:16px;">
+<div class="card">
+    <div class="page-header">
+        <h2>Register as Recovery Provider</h2>
         <a href="{% url 'dashboard' %}" class="btn btn-secondary">← Back to Dashboard</a>
     </div>
+
+    {% if existing_user %}
+    <p>You are registering your existing SeaGuard account as a recovery provider. Your account details are already saved — just fill in your company information below.</p>
+    {% else %}
+    <p>Create a new provider account to offer marine recovery services on SeaGuard.</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label>{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<p style="color:red;">{{ field.errors }}</p>{% endif %}
+            {% if field.help_text %}<p style="color:#666; font-size:13px;">{{ field.help_text }}</p>{% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Submit Registration</button>
+    </form>
+</div>
 {% endblock %}

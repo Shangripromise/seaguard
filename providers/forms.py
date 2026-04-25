@@ -5,6 +5,7 @@ from .models import RecoveryProvider, ProviderRating
 
 
 class RecoveryProviderRegistrationForm(UserCreationForm):
+    """Used by unauthenticated users — creates a new user + provider profile."""
     email = forms.EmailField(required=True)
     company_name = forms.CharField(max_length=200)
     contact_person = forms.CharField(max_length=100)
@@ -39,6 +40,23 @@ class RecoveryProviderRegistrationForm(UserCreationForm):
         return user
 
 
+class ExistingUserProviderRegistrationForm(forms.Form):
+    """Used by already logged-in users — creates provider profile only, no new user."""
+    company_name = forms.CharField(max_length=200)
+    contact_person = forms.CharField(max_length=100)
+    phone_number = forms.CharField(max_length=20)
+    business_registration = forms.CharField(max_length=50)
+    service_area = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}))
+    service_type = forms.ChoiceField(choices=[
+        ('towing',   'Towing'),
+        ('salvage',  'Salvage'),
+        ('medical',  'Medical'),
+        ('fire',     'Fire Fighting'),
+        ('fuel',     'Fuel Delivery'),
+        ('general',  'General Recovery'),
+    ])
+
+
 class ProviderRatingForm(forms.ModelForm):
     score = forms.ChoiceField(
         choices=[(i, f'{i} star{"s" if i > 1 else ""}') for i in range(5, 0, -1)],
@@ -50,5 +68,5 @@ class ProviderRatingForm(forms.ModelForm):
         model = ProviderRating
         fields = ['score', 'comment']
         widgets = {
-            'comment': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Share your experience…'}),
+            'comment': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Share your experience...'}),
         }
