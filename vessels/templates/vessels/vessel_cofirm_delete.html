@@ -8,6 +8,6 @@
         <p><strong>Description:</strong> {{ vessel.description }}</p>
         <a href="{% url 'vessels:vessel_delete' vessel.pk %}" class="btn btn-danger">Delete Vessel</a>
         <a href="{% url 'vessels:vessel_list' %}" class="btn btn-secondary">← My Vessels</a>
-        <a href="{% url 'dashboard' %}" class="btn btn-secondary">← Dashboard</a>
+        <a href="{% url 'accounts:dashboard' %}" class="btn btn-secondary">← Dashboard</a>
     </div>
 {% endblock %}

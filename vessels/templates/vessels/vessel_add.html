@@ -7,7 +7,7 @@
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn btn-primary">Add Vessel</button>
-            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+            <a href="{% url 'accounts:dashboard' %}" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
 {% endblock %}

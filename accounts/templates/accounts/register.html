@@ -8,6 +8,6 @@
             {{ form.as_p }}
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
-        <p style="margin-top:15px;">No account? <a href="{% url 'register' %}">Register here</a></p>
+        <p style="margin-top:15px;">No account? <a href="{% url 'accounts:register' %}">Register here</a></p>
     </div>
 {% endblock %}

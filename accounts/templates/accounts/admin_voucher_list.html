@@ -1,0 +1,44 @@
+﻿{% extends "base.html" %}
+{% block title %}Voucher Monitoring — SeaGuard Admin{% endblock %}
+{% block content %}
+<h2>Voucher Monitoring</h2>
+
+<div style="margin-bottom:15px;">
+  <a href="{% url 'accounts:admin_voucher_create' %}" class="btn btn-primary">+ Create Voucher</a>
+  <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-secondary" style="margin-left:8px;">← Admin Home</a>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Description</th>
+      <th>Type</th>
+      <th>Value</th>
+      <th>Applies to</th>
+      <th>Expiry</th>
+      <th>Max uses</th>
+      <th>Times used</th>
+      <th>Active</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for v in vouchers %}
+    <tr>
+      <td><strong>{{ v.code }}</strong></td>
+      <td>{{ v.description|default:"—" }}</td>
+      <td>{{ v.get_discount_type_display }}</td>
+      <td>{{ v.discount_value }}{% if v.discount_type == 'percentage' %}%{% else %}£{% endif %}</td>
+      <td>{{ v.get_applies_to_display }}</td>
+      <td>{{ v.expiry_date|default:"No expiry" }}</td>
+      <td>{{ v.max_uses|default:"Unlimited" }}</td>
+      <td>{{ v.times_used }}</td>
+      <td>{% if v.is_active %}<span style="color:green;">✓ Active</span>{% else %}<span style="color:red;">✗ Inactive</span>{% endif %}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="9">No vouchers created yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

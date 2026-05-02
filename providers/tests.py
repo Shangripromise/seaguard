@@ -183,12 +183,12 @@ class CR3MemberDiscountsTest(TestCase):
         self.client.login(username='skipper', password='SecurePass123!')
 
     def test_discounts_page_loads(self):
-        response = self.client.get(reverse('member_discounts'))
+        response = self.client.get(reverse('accounts:member_discounts'))
         self.assertEqual(response.status_code, 200)
 
     def test_discounts_page_requires_login(self):
         self.client.logout()
-        response = self.client.get(reverse('member_discounts'))
+        response = self.client.get(reverse('accounts:member_discounts'))
         self.assertEqual(response.status_code, 302)
 
     def test_discounts_shows_locked_message_during_active_emergency(self):
@@ -200,12 +200,12 @@ class CR3MemberDiscountsTest(TestCase):
             description='Active fire',
             status='active',
         )
-        response = self.client.get(reverse('member_discounts'))
+        response = self.client.get(reverse('accounts:member_discounts'))
         self.assertIn(response.status_code, [200, 302])
 
     def test_discounts_accessible_with_no_active_emergency(self):
         """Discounts fully accessible when no active emergency"""
-        response = self.client.get(reverse('member_discounts'))
+        response = self.client.get(reverse('accounts:member_discounts'))
         self.assertEqual(response.status_code, 200)
 
 

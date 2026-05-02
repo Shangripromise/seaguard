@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Create Voucher — SeaGuard Admin{% endblock %}
+{% block content %}
+<h2>Create New Voucher</h2>
+
+<div class="card">
+  <form method="post">
+    {% csrf_token %}
+
+    <label>Code (uppercase, max 20 characters)
+      <input type="text" name="code" maxlength="20" required
+             placeholder="e.g. SUMMER25" style="text-transform:uppercase;">
+    </label>
+
+    <label style="margin-top:12px;">Description
+      <input type="text" name="description" maxlength="200"
+             placeholder="e.g. Summer 2026 promotion">
+    </label>
+
+    <label style="margin-top:12px;">Discount type
+      <select name="discount_type">
+        {% for value, label in discount_types %}
+          <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label style="margin-top:12px;">Discount value (% or £)
+      <input type="number" name="discount_value" min="0" step="0.01" value="10" required>
+    </label>
+
+    <label style="margin-top:12px;">Applies to
+      <select name="applies_to">
+        {% for value, label in applies_to_choices %}
+          <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label style="margin-top:12px;">Expiry date (leave blank for no expiry)
+      <input type="date" name="expiry_date">
+    </label>
+
+    <label style="margin-top:12px;">Max uses (leave blank for unlimited)
+      <input type="number" name="max_uses" min="1" placeholder="e.g. 100">
+    </label>
+
+    <label style="margin-top:12px;">
+      <input type="checkbox" name="is_active" checked> Active immediately
+    </label>
+
+    <div style="margin-top:20px;">
+      <button type="submit" class="btn btn-primary">Create Voucher</button>
+      <a href="{% url 'accounts:admin_voucher_list' %}" class="btn btn-secondary"
+         style="margin-left:8px;">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

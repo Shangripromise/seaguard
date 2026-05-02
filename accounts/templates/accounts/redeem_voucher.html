@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Redeem Voucher — SeaGuard{% endblock %}
+{% block content %}
+<h2>Redeem a Voucher</h2>
+
+<div class="card">
+  <form method="post">
+    {% csrf_token %}
+    <label for="code">Enter your voucher code</label>
+    <input type="text" id="code" name="code" placeholder="e.g. SAVE20"
+           style="text-transform:uppercase;" maxlength="20" required>
+    <button type="submit" class="btn btn-primary" style="margin-top:10px;">Redeem</button>
+  </form>
+</div>
+
+{% if my_redemptions %}
+<h3 style="margin-top:30px;">Your redeemed vouchers</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Description</th>
+      <th>Discount</th>
+      <th>Applies to</th>
+      <th>Redeemed at</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in my_redemptions %}
+    <tr>
+      <td><strong>{{ r.voucher.code }}</strong></td>
+      <td>{{ r.voucher.description|default:"—" }}</td>
+      <td>
+        {{ r.voucher.discount_value }}
+        {% if r.voucher.discount_type == 'percentage' %}%{% else %}£{% endif %} off
+      </td>
+      <td>{{ r.voucher.get_applies_to_display }}</td>
+      <td>{{ r.redeemed_at|date:"d M Y H:i" }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p style="margin-top:20px;">You have not redeemed any vouchers yet.</p>
+{% endif %}
+
+<div style="margin-top:20px;">
+  <a href="{% url 'accounts:dashboard' %}" class="btn btn-secondary">← Back to Dashboard</a>
+</div>
+{% endblock %}

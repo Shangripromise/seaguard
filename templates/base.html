@@ -19,18 +19,20 @@
                 <a href="{% url 'vessels:vessel_list' %}">My Vessels</a>
                 <a href="{% url 'emergencies:emergency_list' %}">Emergencies</a>
                 <a href="{% url 'providers:search' %}">Find Providers</a>
-                <a href="{% url 'member_discounts' %}">Discounts</a>
+                <a href="{% url 'accounts:member_discounts' %}">Discounts</a>
+                <a href="{% url 'accounts:redeem_voucher' %}">Redeem Voucher</a>
                 {% if user.is_staff %}
                     <span style="color:#555;">|</span>
-                    <a href="{% url 'admin_dashboard' %}">Admin Home</a>
+                    <a href="{% url 'accounts:admin_dashboard' %}">Admin Home</a>
                     <a href="{% url 'emergencies:admin_job_dashboard' %}">Live Jobs</a>
                     <a href="{% url 'providers:admin_rating_moderation' %}">Ratings</a>
                     <a href="{% url 'providers:admin_review' %}">Approvals</a>
+                    <a href="{% url 'accounts:admin_voucher_list' %}">Vouchers</a>
                 {% endif %}
-                <a href="{% url 'logout' %}">Logout</a>
+                <a href="{% url 'accounts:logout' %}">Logout</a>
             {% else %}
-                <a href="{% url 'login' %}">Login</a>
-                <a href="{% url 'register' %}">Register</a>
+                <a href="{% url 'accounts:login' %}">Login</a>
+                <a href="{% url 'accounts:register' %}">Register</a>
             {% endif %}
         </div>
     </nav>
