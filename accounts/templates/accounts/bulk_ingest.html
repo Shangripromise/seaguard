@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Bulk Data Import — SeaGuard Admin{% endblock %}
+{% block content %}
+<h2>Bulk Data Import</h2>
+
+<div class="card" style="margin-bottom:20px;">
+  <h3>Upload CSV or JSON File</h3>
+  <p>The system will automatically detect the data type from the file headers:</p>
+  <ul>
+    <li><strong>Vessels</strong> — file must contain column: <code>imo_number</code>, <code>name</code></li>
+    <li><strong>Providers</strong> — file must contain column: <code>company_name</code>, <code>contact_email</code></li>
+  </ul>
+  <p>Duplicate records (matched on IMO number for vessels, company name for providers) will be skipped automatically.</p>
+
+  <form method="post" enctype="multipart/form-data" style="margin-top:15px;">
+    {% csrf_token %}
+    <label><strong>Select file (.csv or .json)</strong>
+      <input type="file" name="datafile" accept=".csv,.json" required style="display:block;margin-top:6px;">
+    </label>
+    <button type="submit" class="btn btn-primary" style="margin-top:12px;">Upload &amp; Import</button>
+    <a href="{% url 'accounts:admin_dashboard' %}" class="btn btn-secondary" style="margin-left:8px;">Cancel</a>
+  </form>
+</div>
+
+{% if results %}
+<div class="card">
+  <h3>Import Results — {{ results.data_type }}</h3>
+
+  <table style="margin-bottom:15px;">
+    <tr><th>Total records in file</th><td>{{ results.total }}</td></tr>
+    <tr><th>Created</th><td style="color:green;">{{ results.created|length }}</td></tr>
+    <tr><th>Skipped (duplicates)</th><td style="color:orange;">{{ results.skipped|length }}</td></tr>
+    <tr><th>Errors</th><td style="color:red;">{{ results.errors|length }}</td></tr>
+  </table>
+
+  {% if results.created %}
+  <h4 style="color:green;">✓ Created ({{ results.created|length }})</h4>
+  <ul>
+    {% for item in results.created %}
+    <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if results.skipped %}
+  <h4 style="color:orange;">⚠ Skipped — duplicates ({{ results.skipped|length }})</h4>
+  <ul>
+    {% for item in results.skipped %}
+    <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if results.errors %}
+  <h4 style="color:red;">✗ Errors ({{ results.errors|length }})</h4>
+  <ul>
+    {% for item in results.errors %}
+    <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+{% endif %}
+
+<div style="margin-top:20px;">
+  <h3>Sample file formats</h3>
+  <p><strong>vessels_sample.csv</strong></p>
+  <pre style="background:#f4f4f4;padding:10px;border-radius:4px;">name,imo_number,vessel_type,registration_number
+MV Anglesey Star,9876543,cargo,WLS-2024-001
+RV Celtic Dawn,9876544,research,WLS-2024-002</pre>
+
+  <p style="margin-top:10px;"><strong>providers_sample.json</strong></p>
+  <pre style="background:#f4f4f4;padding:10px;border-radius:4px;">[
+  {"company_name": "Atlantic Rescue Ltd", "contact_email": "ops@atlantic.com", "phone_number": "01234567890", "service_type": "towing", "coverage_area": "Bristol Channel"},
+  {"company_name": "Celtic Marine Services", "contact_email": "info@celtic.com", "phone_number": "01234567891", "service_type": "fuel", "coverage_area": "Irish Sea"}
+]</pre>
+</div>
+
+{% endblock %}

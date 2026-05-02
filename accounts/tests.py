@@ -2,8 +2,11 @@ from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.urls import reverse
 import datetime
+import io
 
 from .models import Voucher, VoucherRedemption
+from vessels.models import Vessel
+from providers.models import RecoveryProvider
 
 
 class UserRegistrationTest(TestCase):
@@ -247,3 +250,92 @@ class VoucherRedemptionViewTests(TestCase):
         self.client.login(username='adminuser', password='testpass123')
         response = self.client.get(reverse('accounts:admin_voucher_list'))
         self.assertEqual(response.status_code, 200)
+
+
+# ── CR7: Bulk Data Ingestion Tests ────────────────────────────────────────────
+
+class BulkIngestVesselTests(TestCase):
+
+    def setUp(self):
+        self.admin = User.objects.create_user(
+            username='ingestadmin', password='testpass123', is_staff=True
+        )
+        self.user = User.objects.create_user(
+            username='ingestuser', password='testpass123'
+        )
+
+    def test_ingest_page_requires_login(self):
+        """Unauthenticated user cannot access bulk ingest."""
+        response = self.client.get(reverse('accounts:bulk_ingest'))
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_ingest_page_blocked_for_regular_user(self):
+        """Regular user is redirected away from bulk ingest."""
+        self.client.login(username='ingestuser', password='testpass123')
+        response = self.client.get(reverse('accounts:bulk_ingest'))
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_ingest_page_loads_for_staff(self):
+        """Staff user can access bulk ingest page."""
+        self.client.login(username='ingestadmin', password='testpass123')
+        response = self.client.get(reverse('accounts:bulk_ingest'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_csv_vessel_import_creates_records(self):
+        """Valid CSV vessel file creates new vessel records."""
+        self.client.login(username='ingestadmin', password='testpass123')
+        csv_content = (
+            "name,imo_number,vessel_type,flag\n"
+            "MV Test Ship,1234567,cargo,United Kingdom\n"
+        )
+        f = io.BytesIO(csv_content.encode('utf-8'))
+        f.name = 'test.csv'
+        response = self.client.post(
+            reverse('accounts:bulk_ingest'),
+            {'datafile': f},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Vessel.objects.filter(imo_number='1234567').exists())
+
+    def test_csv_duplicate_vessel_is_skipped(self):
+        """Duplicate IMO number is skipped, not duplicated."""
+        Vessel.objects.create(
+            owner=self.admin,
+            name='Existing Ship',
+            imo_number='9999999',
+            vessel_type='cargo',
+            flag='United Kingdom',
+        )
+        self.client.login(username='ingestadmin', password='testpass123')
+        csv_content = (
+            "name,imo_number,vessel_type,flag\n"
+            "Duplicate Ship,9999999,cargo,United Kingdom\n"
+        )
+        f = io.BytesIO(csv_content.encode('utf-8'))
+        f.name = 'test.csv'
+        self.client.post(reverse('accounts:bulk_ingest'), {'datafile': f})
+        self.assertEqual(Vessel.objects.filter(imo_number='9999999').count(), 1)
+
+    def test_unsupported_file_type_rejected(self):
+        """Non CSV/JSON file is rejected gracefully."""
+        self.client.login(username='ingestadmin', password='testpass123')
+        f = io.BytesIO(b'some content')
+        f.name = 'test.txt'
+        response = self.client.post(reverse('accounts:bulk_ingest'), {'datafile': f})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Unsupported file type')
+
+    def test_json_provider_import_creates_records(self):
+        """Valid JSON provider file creates new provider records."""
+        self.client.login(username='ingestadmin', password='testpass123')
+        json_content = (
+            '[{"company_name": "Test Rescue Co", "contact_person": "Bob",'
+            ' "phone_number": "01234567890", "business_registration": "TR-001",'
+            ' "service_type": "towing", "service_area": "Test Sea"}]'
+        )
+        f = io.BytesIO(json_content.encode('utf-8'))
+        f.name = 'test.json'
+        self.client.post(reverse('accounts:bulk_ingest'), {'datafile': f})
+        self.assertTrue(
+            RecoveryProvider.objects.filter(company_name='Test Rescue Co').exists()
+        )
