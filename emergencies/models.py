@@ -23,16 +23,17 @@ class EmergencyRequest(models.Model):
     ]
 
     # Role-based status transitions
-    # 'reported' is the initial state — unassigned, awaiting dispatch
+    # 'reported' is the initial state - unassigned, awaiting dispatch
     # 'active'   means a provider has been assigned and is responding
+    # 'member'   role added — members can cancel their own emergency
     TRANSITIONS = {
         'reported':  {
             'active':    ['staff'],
-            'cancelled': ['provider', 'staff'],
+            'cancelled': ['provider', 'staff', 'member'],
         },
         'active':    {
             'resolved':  ['provider', 'staff'],
-            'cancelled': ['provider', 'staff'],
+            'cancelled': ['provider', 'staff', 'member'],
         },
         'resolved':  {
             'active':    ['staff'],
@@ -62,7 +63,20 @@ class EmergencyRequest(models.Model):
     last_status_change = models.DateTimeField(default=timezone.now)
 
     def allowed_transitions(self, user):
-        role = 'staff' if user.is_staff else 'provider'
+        """
+        Return permitted status transitions for this user.
+        Three roles: staff (admin), provider (recovery business),
+        member (vessel owner who submitted the emergency).
+        Bug fix: previously all non-staff users were treated as
+        'provider', meaning members had unintended provider-level access.
+        """
+        if user.is_staff:
+            role = 'staff'
+        elif hasattr(user, 'recoveryprovider'):
+            role = 'provider'
+        else:
+            role = 'member'
+
         transitions = self.TRANSITIONS.get(self.status, {})
         allowed = []
         for next_status, roles in transitions.items():
